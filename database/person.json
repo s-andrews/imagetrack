@@ -1,0 +1,14 @@
+{
+    "_id": "automatically assigned",
+    "first_name": "Simon",
+    "last_name": "Andrews",
+    "email": "simon.andrews@babraham.ac.uk",
+    "group": "bioinformatics",
+    "admin": true,
+    "password": "hashedpassword",
+    "sessioncode": "usedwhenloggingin",
+    "reset_code": "codeforresetting",
+    "shared_with": [
+        "anne@babraham.ac.uk","jo@babraham.ac.uk"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "_id": "automatically assigned",
+    "date": "2020-01-20",
+    "name": "Nanog KO live imaging",
+    "instrument": "Zeiss 780 confocal",
+    "modality": ["Spinning disk confocal","Multi-photon"],
+    "cell_type": "ES Cells",
+    "cell_prep": "fixed",
+    "fixation_method": "freezing",
+    "primary_antibody": "nanog",
+    "secondary_antibody": "IgG",
+    "fluorescence_labels": "No idea",
+    "passage_number": 8,
+    "organism": "mouse",
+    "age": "d10",
+    "sex": "male",
+    "comments": [
+        "This is a comment",
+        "This is another comment"
+    ]
+}
