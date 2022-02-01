@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-from asyncio.windows_events import NULL
-import json
 import bcrypt
 import random
+from pathlib import Path
 from pymongo import MongoClient
+from bson.json_util import dumps
 from datetime import date
 import cgi
 import cgitb
@@ -34,15 +34,18 @@ def main():
 
     else:
         # Everything else needs validation so let's check that first
-        person = checksession(form["sessionid"].value)
+        person = checksession(form["session"].value)
         if person is None:
             send_response(False,"Unknown session")
         
         elif form["action"].value == "list_projects":
-            get_projects(person)
+            list_projects(person)
 
         elif form["action"].value == "new_project":
             new_project(person,form)
+
+        elif form["action"].value == "new_user":
+            new_user(person,form)
 
 def send_response(success,message):
     if success:
@@ -50,20 +53,47 @@ def send_response(success,message):
     else:
         print("Content-type: text/plain; charset=utf-8\n\nFail: "+message, end="")
 
-def get_projects(personid):
-    projects.find({"person_id"},personid)
+def send_json(data):
+    print("Content-type: text/json; charset=utf-8\n\n"+dumps(data))
+
+def new_user(person,form):
+
+    if not person["admin"]:
+        send_response(False,"Only Admins can make new users")
+
+    new_user = {
+        "first_name": form["first_name"].value,
+        "last_name": form["last_name"].value,
+        "email": form["email"].value,
+        "group": form["group"].value,
+        "admin": False,
+        "password": bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt()),
+        "sessioncode": None,
+        "reset_code": None,
+        "shared_with": []
+    }
+
+    people.insert_one(new_user)
+
+    send_response(True,"")
+    
+
+def list_projects(person):
+    project_list = projects.find({"person_id":person["_id"]})
+    send_json(project_list)
 
 
 def get_configuration():
-    configuration.find_one()
+    config = configuration.find_one({})
+    send_json(config)
 
 def process_login (email,password):
     person = people.find_one({"email":email})
 
     # Check the password
-    if bcrypt.checkpw(password,person["password"]):
+    if bcrypt.checkpw(password.encode("UTF-8"),person["password"]):
         sessioncode = generate_id(20)
-        people.update_one({{"email":email},{"sessioncode": sessioncode}})
+        people.update_one({"email":email},{"$set":{"sessioncode": sessioncode}})
 
         send_response(True,sessioncode)
     else:
@@ -89,26 +119,27 @@ def new_project(person,form):
 
     # Base folder / Group / Person / date+name
 
+    folder = Path("c:/Users/andrewss/")
+
     folders = [person["group"],person["first_name"]+person["last_name"],str(date.today())+"_"+form["name"].value]
 
     # TODO: Remove invalid characters
     bad_chars = "#%&{}\\\/<>*?$!'\":+`|="
 
-    valid_folders = []
-
-    for folder in folders:
+    for f in folders:
         for c in bad_chars:
-            folder = folder.replace(c,"_")
+            f = f.replace(c,"_")
+
+        folder = folder.joinpath(f)
         
-        valid_folders.add(folder)
-
-
     project = {
         "person_id": person["_id"],
         "date": str(date.today()),
+        "folder": str(folder),
         "name": form["name"].value,
         "instrument": form["instrument"].value,
-        "modality": ["Spinning disk confocal","Multi-photon"],
+        # TODO: Deal with multiple modalities
+        "modality": form["modality"].value,
         "cell_type": form["cell_type"].value,
         "cell_prep": form["cell_prep"].value,
         "fixation_method": form["fixation_method"].value,
@@ -122,9 +153,9 @@ def new_project(person,form):
         "comments": []
     }
 
-    id = projects.insert_one(project)
+    projects.insert_one(project)
 
-    send_response(True,id.inserted_id)
+    send_response(True,str(folder))
 
 
 def generate_id(size):
