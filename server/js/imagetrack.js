@@ -82,6 +82,8 @@ function process_login() {
                 // Cookies.set("sierra_session_id", session_id)
                 $("#logindiv").modal("hide")
                 $("#maincontent").show()
+                // TODO: Load actual content.
+                $('#example').DataTable();
 
                 // Get their list of submissions
                 // populate_submissions(undefined)
