@@ -1,0 +1,12 @@
+#maincontent {
+    display: none;
+}
+
+/* Login */
+.error_message {
+    background: darkred;
+    color: white;
+    padding: 0.2em;
+    margin-top: 0.2em;
+    display: none;
+}

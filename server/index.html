@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- CSS -->
+    <link href="css/imagetrack.css" rel="stylesheet">
+
+    <title>ImageTrack LIMS</title>
+  </head>
+  <body>
+    <div id="maincontent">
+    <h1>ImageTrack LIMS</h1>
+    </div>
+
+
+    <!-- Login -->
+    <div id="logindiv" class="modal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 class="modal-title">Log In</h2>
+              <img class="float-end" src="images/imagetrack_logo.png">
+            </div>
+            <div class="modal-body">
+                <label for="email">Email</label>
+                <input class="form-control" type="text" id="email">
+                <label for="Password">Password</label>
+                <input class="form-control" type="password" id="password">
+                <p id="loginerror" class="error_message text-center">Error Messages Go Here</p>
+                <button id="login" type="button" class="form-control btn btn-primary mt-2">Log In</button>
+
+                <p>
+                    <a href="#" class="float-end" id="forgotpassword">Forgot Password?</a>
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <!-- JQuery which we're still using even if bootstrap doesn't need it any more -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+ 
+    <!-- JSCookie -->
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.0/dist/js.cookie.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="js/imagetrack.js"></script>
+
+  </body>
+</html>
