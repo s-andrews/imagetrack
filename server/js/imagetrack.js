@@ -82,8 +82,7 @@ function process_login() {
                 // Cookies.set("sierra_session_id", session_id)
                 $("#logindiv").modal("hide")
                 $("#maincontent").show()
-                // TODO: Load actual content.
-                $('#example').DataTable();
+                update_projects()
 
                 // Get their list of submissions
                 // populate_submissions(undefined)
@@ -94,4 +93,41 @@ function process_login() {
             }
         }
     )
+}
+
+function update_projects(){
+
+    $.ajax(
+        {
+            url: backend,
+            method: "POST",
+            data: {
+                action: "list_projects",
+                session: session
+            },
+            success: function(projects) {
+                $("#projectbody").empty()
+
+                let t = $('#projecttable').DataTable();
+
+                for (let p in projects) {
+                    let project = projects[p]
+                    console.log(project)
+                    t.row.add([
+                        project["name"],
+                        project["date"],
+                        project["instrument"],
+                        project["modality"],
+                        "Folder"
+                    ]).draw(false)
+                }
+
+
+            },
+            error: function(message) {
+                $("#projectbody").clear()
+            }
+        }
+    )
+
 }
