@@ -6,35 +6,40 @@ $( document ).ready(function() {
 
     // Action when they log in
     $("#login").click(process_login)
+
+    // Action when they log out
+    $("#logout").click(logout)
 })
 
 function show_login() {
 
     // Check to see if there's a valid session ID we can use
 
-    session_id = Cookies.get("imagetrack_session_id")
-    if (session_id) {
+    session = Cookies.get("imagetrack_session_id")
+    if (session) {
         // Validate the ID
         $.ajax(
             {
                 url: backend,
                 method: "POST",
                 data: {
-                    action: "session_login",
-                    session_id: session_id,
+                    action: "validate_session",
+                    session: session,
                 },
                 success: function(session_string) {
-                    let sections = session_string.split("\t")
-                    if (sections.length < 2) {
-                        session_id = ""
+                    if (!session_string.startsWith("Success:")) {
+                        session = ""
+                        Cookies.remove("imagetrack_session_id")
                         $("#logindiv").modal("show")
+                        show_login()
                         return
                     }
-                    var realname = sections[0]
+                    var realname = session_string.substring(9)
+                    $("#logindiv").modal("hide")
                     $("#maincontent").show()
     
-                    // Get their list of submissions
-                    populate_submissions(undefined)
+                    // Get their list of projects
+                    update_projects()
                 },
                 error: function(message) {
                     console.log("Existing session didn't validate")
@@ -50,9 +55,9 @@ function show_login() {
 
 function logout() {
     session_id = ""
-    Cookies.remove("sierra_session_id")
-    $("#submissions").html("")
+    Cookies.remove("imagetrack_session_id")
     $("#maincontent").hide()
+    $('#projecttable').DataTable().clear()
     $("#logindiv").modal("show")
 }
 
@@ -79,13 +84,8 @@ function process_login() {
                 $("#loginerror").hide()
                 session = sections[1]
 
-                // Cookies.set("sierra_session_id", session_id)
-                $("#logindiv").modal("hide")
-                $("#maincontent").show()
-                update_projects()
-
-                // Get their list of submissions
-                // populate_submissions(undefined)
+                Cookies.set("imagetrack_session_id", session)
+                show_login()
             },
             error: function(message) {
                 $("#loginerror").html("Login Failed")

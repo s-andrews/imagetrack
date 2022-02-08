@@ -29,6 +29,11 @@ def main():
     if form["action"].value == "login":
         process_login(form["email"].value,form["password"].value)
 
+    elif form["action"].value == "validate_session":
+        person = checksession(form["session"].value)
+        send_response(True,person["first_name"]+" "+person["last_name"])
+
+
     elif form["action"].value == "configuration":
         get_configuration()
 

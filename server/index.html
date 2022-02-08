@@ -18,6 +18,15 @@
   </head>
   <body>
     <div id="maincontent" class="container">
+        <nav class="navbar navbar-light bg-light">
+          <div class="container-fluid">
+              <button class="btn btn-success" id="newproject">New Project</button>
+              <button class="btn btn-danger" id="logout">Log Out</button>
+          </div>
+        </nav>
+        <div class="container-fluid text-center">
+          <img src="images/imagetrack_logo.svg" width="25%">
+        </div>
         <table id="projecttable" class="table table-striped" style="width:100%">
             <thead>
                 <tr>
@@ -30,15 +39,6 @@
             </thead>
             <tbody id="projecttbody">
             </tbody>
-            <tfoot>
-                <tr>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Instrument</th>
-                    <th>Modality</th>
-                    <th>Folder</th>
-                </tr>
-            </tfoot>
         </table>
     </div>
 
