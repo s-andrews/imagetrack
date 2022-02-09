@@ -11,8 +11,11 @@ $( document ).ready(function() {
     // Action when they log out
     $("#logout").click(logout)
 
-    // Action for a new project
+    // Action for starting a new project
     $("#newproject").click(new_project)
+
+    // Action for submitting a new project
+    $("#create_project").click(create_project)
 
 
 })
@@ -116,6 +119,48 @@ function new_project() {
 
     $("#newprojectdiv").modal("show")
 }
+
+
+function create_project () {
+
+    // Collect the information we need
+    // TODO: Do something sensible if they haven't given everything
+    let project_name = $("#project_name").val()
+    let project_instrument = $("#project_instrument").val()
+    // The modality is actually an array since they can select multiple values
+    let project_modality = $("#project_modality").val()
+    let project_organism = $("#project_organism").val()
+
+    $.ajax(
+        {
+            url: backend,
+            method: "POST",
+            data: {
+                action: "new_project",
+                session: session,
+                name: project_name,
+                instrument: project_instrument,
+                modality: project_modality,
+                organism: project_organism
+            },
+            success: function(new_project_details) {
+                console.log(new_project_details)
+
+                // Add this to the list of projects and show its details
+
+
+                // Remove the new project dialog
+                $("#newprojectdiv").modal("hide")
+
+            },
+            error: function(message) {
+                console.log("Failed to create project")
+            }
+        }
+    )
+}
+
+
 
 function process_login() {
     email = $("#email").val()

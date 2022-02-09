@@ -119,6 +119,11 @@ def new_project(person,form):
     Creates a new event and puts it into the database
     """
 
+    name = form["name"].value
+    instrument = form["instrument"].value
+    organism = form["organism"].value
+    modalities = form.getlist("modality")
+
     # We need to make up a new folder address for this project.
     # The structure of the address will be:
 
@@ -126,7 +131,7 @@ def new_project(person,form):
 
     folder = Path("c:/Users/andrewss/")
 
-    folders = [person["group"],person["first_name"]+person["last_name"],str(date.today())+"_"+form["name"].value]
+    folders = [person["group"],person["first_name"]+person["last_name"],str(date.today())+"_"+name]
 
     # TODO: Remove invalid characters
     bad_chars = "#%&{}\\\/<>*?$!'\":+`|="
@@ -141,26 +146,17 @@ def new_project(person,form):
         "person_id": person["_id"],
         "date": str(date.today()),
         "folder": str(folder),
-        "name": form["name"].value,
-        "instrument": form["instrument"].value,
+        "name": name,
+        "instrument": instrument,
         # TODO: Deal with multiple modalities
-        "modality": form["modality"].value,
-        "cell_type": form["cell_type"].value,
-        "cell_prep": form["cell_prep"].value,
-        "fixation_method": form["fixation_method"].value,
-        "primary_antibody": form["primary_antibody"].value,
-        "secondary_antibody": form["secondary_antibody"].value,
-        "fluorescence_labels": form["fluorescence_labels"].value,
-        "passage_number": form["passage_number"].value,
-        "organism": form["organism"].value,
-        "age": form["age"].value,
-        "sex": form["sex"].value,
+        "modality": modalities,
+        "organism": organism,
         "comments": []
     }
 
-    projects.insert_one(project)
+    project["_id"] = projects.insert_one(project).inserted_id
 
-    send_response(True,str(folder))
+    send_json(project)
 
 
 def generate_id(size):
