@@ -217,7 +217,7 @@ function update_projects(){
                         project["name"],
                         project["date"],
                         project["instrument"],
-                        project["modality"],
+                        project["modality"].join(", "),
                         "Folder"
                     ]).draw(false)
                 }

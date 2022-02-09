@@ -122,7 +122,7 @@ def new_project(person,form):
     name = form["name"].value
     instrument = form["instrument"].value
     organism = form["organism"].value
-    modalities = form.getlist("modality")
+    modalities = form.getlist("modality[]")
 
     # We need to make up a new folder address for this project.
     # The structure of the address will be:
