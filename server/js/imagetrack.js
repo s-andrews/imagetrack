@@ -1,5 +1,6 @@
 const backend = "/cgi-bin/imagetrack_server.py"
 var session = ""
+var configuration = ""
 
 $( document ).ready(function() {
     show_login()
@@ -9,6 +10,11 @@ $( document ).ready(function() {
 
     // Action when they log out
     $("#logout").click(logout)
+
+    // Action for a new project
+    $("#newproject").click(new_project)
+
+
 })
 
 function show_login() {
@@ -59,6 +65,56 @@ function logout() {
     $("#maincontent").hide()
     $('#projecttable').DataTable().clear()
     $("#logindiv").modal("show")
+}
+
+
+function new_project() {
+
+    // Load the configuration if it's not here already
+    if (!configuration) {
+        $.ajax(
+            {
+                url: backend,
+                method: "POST",
+                data: {
+                    action: "configuration"
+                },
+                success: function(configuration_data) {
+                    configuration = configuration_data
+                    console.log(configuration)
+
+                    // Update the new project form
+                    let s = $("#project_instrument")
+                    s.empty()
+                    for (let i in configuration.instruments) {
+                        s.append(`<option>${configuration.instruments[i]}</option>`)
+                    }
+
+                    s = $("#project_modality")
+                    s.empty()
+                    for (let i in configuration.modalities) {
+                        s.append(`<option>${configuration.modalities[i]}</option>`)
+                    }
+
+                    s = $("#project_organism")
+                    s.empty()
+                    for (let i in configuration.organisms) {
+                        s.append(`<option>${configuration.organisms[i]}</option>`)
+                    }
+
+
+
+
+                },
+                error: function(message) {
+                    console.log("Failed to retrieve configuration")
+                }
+            }
+        )
+    }
+
+
+    $("#newprojectdiv").modal("show")
 }
 
 function process_login() {
@@ -112,7 +168,6 @@ function update_projects(){
 
                 for (let p in projects) {
                     let project = projects[p]
-                    console.log(project)
                     t.row.add([
                         project["name"],
                         project["date"],
