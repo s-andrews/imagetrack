@@ -46,6 +46,9 @@ def main():
         elif form["action"].value == "list_projects":
             list_projects(person)
 
+        elif form["action"].value == "project_details":
+            project_details(person,form["folder"].value)
+
         elif form["action"].value == "new_project":
             new_project(person,form)
 
@@ -86,6 +89,11 @@ def new_user(person,form):
 def list_projects(person):
     project_list = projects.find({"person_id":person["_id"]})
     send_json(project_list)
+
+
+def project_details(person,folder):
+    project_details = projects.find_one({"person_id":person["_id"], "folder":folder})
+    send_json(project_details)
 
 
 def get_configuration():

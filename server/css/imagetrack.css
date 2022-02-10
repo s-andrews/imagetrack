@@ -10,3 +10,13 @@
     margin-top: 0.2em;
     display: none;
 }
+
+
+/* Change cursor when hovering main project list, need to tighten this though */
+td {
+    cursor: pointer;
+}
+
+#projectdetails {
+    display: none;
+}

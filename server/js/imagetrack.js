@@ -17,8 +17,46 @@ $( document ).ready(function() {
     // Action for submitting a new project
     $("#create_project").click(create_project)
 
-
+    // Action when clicking on a project
+    $('#projecttable tbody').on('click', 'tr', select_project)
+    
 })
+
+
+function select_project() {
+    let table = $('#projecttable').DataTable();
+    let data = table.row( this ).data();
+
+    // We use the folder as the unique key to get the project
+    // details from the back end.  We'll get the full details
+    // and show them in a div below.
+    let folder = data[5]
+
+    $("#selectedprojectname").text(data[0])
+    $("#selectedprojectfolder").text(folder)
+
+    $.ajax(
+        {
+            url: backend,
+            method: "POST",
+            data: {
+                action: "project_details",
+                session: session,
+                folder: folder
+            },
+            success: function(project_json) {
+                console.log(project_json)
+                $("#projectdetails").show()
+            },
+            error: function(message) {
+                console.log("Couldn't get details for project")
+                $("#logindiv").modal("show")
+            }
+        }
+    )
+
+}
+
 
 function show_login() {
 
@@ -147,6 +185,9 @@ function create_project () {
                 console.log(new_project_details)
 
                 // Add this to the list of projects and show its details
+                // Not the most elegant way to do this
+                // TODO: Be more elegant!
+                update_projects()
 
 
                 // Remove the new project dialog
@@ -218,7 +259,8 @@ function update_projects(){
                         project["date"],
                         project["instrument"],
                         project["modality"].join(", "),
-                        "Folder"
+                        project["organism"],
+                        project["folder"]
                     ]).draw(false)
                 }
 
