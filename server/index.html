@@ -55,7 +55,14 @@
           </div>
 
           <div class="row">
-            <div class="col-md-4"><input id="projecttagname" class="form-control" type="text" placeholder="Tag Name"></div>
+            <div class="col-md-4">
+              <input id="projecttagname" class="form-control" type="text" placeholder="Tag Name" data-bs-toggle="dropdown" aria-expanded="false">
+              <ul class="dropdown-menu" aria-labelledby="projecttagname">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+              </ul>
+            </div>
             <div class="col-md-4"><input id="projecttagvalue" class="form-control" type="text" placeholder="Tag Value"></div>
             <div class="col-md-4"><button id="addprojecttag" class="btn btn-primary">Add Tag</button></div>
           </div>
