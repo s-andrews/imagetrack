@@ -307,8 +307,11 @@ function create_project () {
 
 
 function process_login() {
-    email = $("#email").val()
-    password = $("#password").val()
+    let email = $("#email").val()
+    let password = $("#password").val()
+
+    // Clear the password so they can't do it again
+    $("#password").val("")
 
     $.ajax(
         {
