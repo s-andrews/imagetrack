@@ -29,12 +29,12 @@ h5 {
     font-family: 'Courier New', Courier, monospace;
 }
 
-.tagname {
+.tagname, .commentdate {
     background-color: darkgrey;
     color: white;
     font-weight: bold;
 }
 
-#projecttags {
+#projecttags, #projectcomments {
     padding-bottom: 2em;
 }

@@ -22,7 +22,11 @@ $( document ).ready(function() {
 
     // Action when adding a new project tag
     $("#addprojecttag").click(add_project_tag)
-    
+
+    // Action when adding a new project comment
+    $("#addprojectcomment").click(add_project_comment)
+
+
 })
 
 
@@ -54,6 +58,33 @@ function add_project_tag() {
         }
     )
 }
+
+function add_project_comment() {
+    let folder = $("#selectedprojectfolder").text()
+    let comment_text = $("#projectcommenttext").val()
+
+    $.ajax(
+        {
+            url: backend,
+            method: "POST",
+            data: {
+                action: "add_comment",
+                session: session,
+                folder: folder,
+                comment_text: comment_text
+            },
+            success: function(project_json) {
+                console.log("Added tag")
+                $("#projectcommenttext").val("")
+                update_selected_project(folder)
+            },
+            error: function(message) {
+                console.log("Failed to add comment")
+            }
+        }
+    )
+}
+
 
 function select_project() {
     let table = $('#projecttable').DataTable();
@@ -92,6 +123,21 @@ function update_selected_project (folder) {
                     <div class="col-md-1"></div>
                     <div class="col-md-3 tagname">${i}</div>
                     <div class="col-md-4 tagvalue">${project_json["tags"][i]}</div>
+                    </div>
+                    `)
+                }
+
+                let c = $("#projectcomments")
+                c.empty()
+                for (let i in project_json["comments"]) {
+                    c.append(`
+                    <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-11 commentdate">${project_json["comments"][i]["date"]}</div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-11 commenttext">${project_json["comments"][i]["text"]}</div>
                     </div>
                     `)
                 }
@@ -308,6 +354,7 @@ function update_projects(){
                 $("#projectbody").empty()
 
                 let t = $('#projecttable').DataTable();
+                t.clear()
 
                 for (let p in projects) {
                     let project = projects[p]

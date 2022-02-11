@@ -58,6 +58,9 @@ def main():
         elif form["action"].value == "add_tag":
             add_tag(person,form["folder"].value,form["tag_name"].value,form["tag_value"].value)
 
+        elif form["action"].value == "add_comment":
+            add_comment(person,form["folder"].value,form["comment_text"].value)
+
 
 def send_response(success,message):
     if success:
@@ -106,6 +109,16 @@ def add_tag(person,folder,tag_name, tag_value):
     tags[tag_name] = tag_value
 
     projects.update_one({"folder":folder},{"$set": {"tags":tags}})
+
+    send_response(True,"")
+
+
+def add_comment(person,folder,text):
+    doc = projects.find_one({"person_id":person["_id"], "folder":folder})
+    comments = doc["comments"]
+    comments.append({"date":str(date.today()), "text":text})
+
+    projects.update_one({"folder":folder},{"$set": {"comments":comments}})
 
     send_response(True,"")
 
