@@ -7,6 +7,11 @@ $( document ).ready(function() {
 
     // Action when they log in
     $("#login").click(process_login)
+    $("#password").keypress(function(e){
+        if(e.keyCode == 13){
+            process_login();
+        }
+    });
 
     // Action when they log out
     $("#logout").click(logout)
