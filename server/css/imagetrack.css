@@ -20,3 +20,21 @@ td {
 #projectdetails {
     display: none;
 }
+
+h2 {
+    padding-top: 1em;
+}
+
+h5 {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.tagname {
+    background-color: darkgrey;
+    color: white;
+    font-weight: bold;
+}
+
+#projecttags {
+    padding-bottom: 2em;
+}

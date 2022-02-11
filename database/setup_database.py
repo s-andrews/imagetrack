@@ -105,6 +105,18 @@ def main():
             "Fly (Drosophila melanogaster",
             "Worm (Caenorhabditis elegans)",
             "E.coli"
+        ],
+
+        "tags": [
+            "Cell Type",
+            "Cell Prep",
+            "Fixation Method",
+            "Primary Antibody",
+            "Secondary Antibody",
+            "Fluorescence Labels",
+            "Passage Number",
+            "Age",
+            "Sex"
         ]
     }
     configuration.insert_one(config)

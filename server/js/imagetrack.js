@@ -19,9 +19,41 @@ $( document ).ready(function() {
 
     // Action when clicking on a project
     $('#projecttable tbody').on('click', 'tr', select_project)
+
+    // Action when adding a new project tag
+    $("#addprojecttag").click(add_project_tag)
     
 })
 
+
+function add_project_tag() {
+    let folder = $("#selectedprojectfolder").text()
+    let tag_name = $("#projecttagname").val()
+    let tag_value = $("#projecttagvalue").val()
+
+    $.ajax(
+        {
+            url: backend,
+            method: "POST",
+            data: {
+                action: "add_tag",
+                session: session,
+                folder: folder,
+                tag_name: tag_name,
+                tag_value: tag_value
+            },
+            success: function(project_json) {
+                console.log("Added tag")
+                $("#projecttagname").val("")
+                $("#projecttagvalue").val("")
+                update_selected_project(folder)
+            },
+            error: function(message) {
+                console.log("Failed to add tag")
+            }
+        }
+    )
+}
 
 function select_project() {
     let table = $('#projecttable').DataTable();
@@ -33,7 +65,11 @@ function select_project() {
     let folder = data[5]
 
     $("#selectedprojectname").text(data[0])
-    $("#selectedprojectfolder").text(folder)
+    $("#selectedprojectfolder").text(folder)    
+    update_selected_project(folder)
+}
+
+function update_selected_project (folder) {
 
     $.ajax(
         {
@@ -46,11 +82,25 @@ function select_project() {
             },
             success: function(project_json) {
                 console.log(project_json)
+
+                let t = $("#projecttags")
+                t.empty()
+
+                for (let i in project_json["tags"]) {
+                    t.append(`
+                    <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-3 tagname">${i}</div>
+                    <div class="col-md-4 tagvalue">${project_json["tags"][i]}</div>
+                    </div>
+                    `)
+                }
+
                 $("#projectdetails").show()
             },
             error: function(message) {
                 console.log("Couldn't get details for project")
-                $("#logindiv").modal("show")
+                $("#projectdetails").hide()
             }
         }
     )
@@ -87,6 +137,10 @@ function show_login() {
     
                     // Get their list of projects
                     update_projects()
+
+                    // Load the config
+                    load_configuration()
+
                 },
                 error: function(message) {
                     console.log("Existing session didn't validate")
@@ -108,10 +162,9 @@ function logout() {
     $("#logindiv").modal("show")
 }
 
+function load_configuration () {
+    // Loads the main config and populates the appropriate fields.
 
-function new_project() {
-
-    // Load the configuration if it's not here already
     if (!configuration) {
         $.ajax(
             {
@@ -154,6 +207,10 @@ function new_project() {
         )
     }
 
+}
+
+
+function new_project() {
 
     $("#newprojectdiv").modal("show")
 }

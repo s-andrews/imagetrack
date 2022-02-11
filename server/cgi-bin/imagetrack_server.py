@@ -55,6 +55,10 @@ def main():
         elif form["action"].value == "new_user":
             new_user(person,form)
 
+        elif form["action"].value == "add_tag":
+            add_tag(person,form["folder"].value,form["tag_name"].value,form["tag_value"].value)
+
+
 def send_response(success,message):
     if success:
         print("Content-type: text/plain; charset=utf-8\n\nSuccess: "+message, end="")
@@ -94,6 +98,17 @@ def list_projects(person):
 def project_details(person,folder):
     project_details = projects.find_one({"person_id":person["_id"], "folder":folder})
     send_json(project_details)
+
+
+def add_tag(person,folder,tag_name, tag_value):
+    doc = projects.find_one({"person_id":person["_id"], "folder":folder})
+    tags = doc["tags"]
+    tags[tag_name] = tag_value
+
+    projects.update_one({"folder":folder},{"$set": {"tags":tags}})
+
+    send_response(True,"")
+
 
 
 def get_configuration():
@@ -159,6 +174,7 @@ def new_project(person,form):
         # TODO: Deal with multiple modalities
         "modality": modalities,
         "organism": organism,
+        "tags": {},
         "comments": []
     }
 
