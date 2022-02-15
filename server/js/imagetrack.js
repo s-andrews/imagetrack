@@ -50,7 +50,6 @@ function suggest_tags() {
 
     $(".tagsuggestion").unbind()
     $(".tagsuggestion").click(function(e) {
-        console.log("Clicked")
         $("#projecttagname").val($(this).text())
         return(false)
     })
@@ -74,7 +73,6 @@ function add_project_tag() {
                 tag_value: tag_value
             },
             success: function(project_json) {
-                console.log("Added tag")
                 $("#projecttagname").val("")
                 $("#projecttagvalue").val("")
                 update_selected_project(folder)
@@ -101,7 +99,6 @@ function add_project_comment() {
                 comment_text: comment_text
             },
             success: function(project_json) {
-                console.log("Added tag")
                 $("#projectcommenttext").val("")
                 update_selected_project(folder)
             },
@@ -139,7 +136,6 @@ function update_selected_project (folder) {
                 folder: folder
             },
             success: function(project_json) {
-                console.log(project_json)
 
                 let t = $("#projecttags")
                 t.empty()
@@ -248,7 +244,6 @@ function load_configuration () {
                 },
                 success: function(configuration_data) {
                     configuration = configuration_data
-                    console.log(configuration)
 
                     // Update the new project form
                     let s = $("#project_instrument")
@@ -313,7 +308,6 @@ function create_project () {
                 organism: project_organism
             },
             success: function(new_project_details) {
-                console.log(new_project_details)
 
                 // Add this to the list of projects and show its details
                 // Not the most elegant way to do this
