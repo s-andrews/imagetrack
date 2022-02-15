@@ -25,6 +25,9 @@ $( document ).ready(function() {
     // Action when clicking on a project
     $('#projecttable tbody').on('click', 'tr', select_project)
 
+    // Make tag name suggestions
+    $("#projecttagname").keyup(suggest_tags);
+
     // Action when adding a new project tag
     $("#addprojecttag").click(add_project_tag)
 
@@ -33,6 +36,25 @@ $( document ).ready(function() {
 
 
 })
+
+function suggest_tags() {
+    let text = $("#projecttagname").val().toLowerCase()
+
+    $("#tagsuggestions").empty()
+
+    for (let i in configuration["tags"]) {
+        if (text.length == 0 || configuration["tags"][i].toLowerCase().includes(text)) {
+            $("#tagsuggestions").append(`<li><a class="tagsuggestion dropdown-item" href="#">${configuration["tags"][i]}</a></li>`)
+        }
+    }
+
+    $(".tagsuggestion").unbind()
+    $(".tagsuggestion").click(function(e) {
+        console.log("Clicked")
+        $("#projecttagname").val($(this).text())
+        return(false)
+    })
+}
 
 
 function add_project_tag() {
@@ -247,7 +269,8 @@ function load_configuration () {
                         s.append(`<option>${configuration.organisms[i]}</option>`)
                     }
 
-
+                    // Run the function to update tag suggestions to populate the list
+                    suggest_tags()
 
 
                 },
