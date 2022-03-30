@@ -1,0 +1,4 @@
+# The list of python packages needed to for the system to work
+bcrypt
+pymongo
+bson
