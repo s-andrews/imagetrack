@@ -383,17 +383,24 @@ function update_projects(){
 
                 for (let p in projects) {
                     let project = projects[p]
-                    t.row.add([
+                    let i = t.row.add([
                         project["name"],
                         project["date"],
                         project["instrument"],
                         project["modality"].join(", "),
                         project["organism"],
                         project["folder"]
-                    ]).draw(false)
+                    ]).index();
+
+                    // Now we can add the project oid to the tr as a 
+                    // data attribute so we can find the project oid
+                    // easily when someone clicks on it.
+                    console.log(t.rows(i).nodes().to$())
+                    t.rows(i).nodes().to$().attr("data-oid",project["_id"]["$oid"])
+
                 }
 
-
+                t.draw();
             },
             error: function(message) {
                 $("#projectbody").clear()
