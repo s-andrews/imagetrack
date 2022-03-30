@@ -36,19 +36,36 @@ sudo mkdir /mnt/imagedatastore
 Then, the line for ```/etc/fstab``` is:
 
 ```
-central-cluster:/ifs/Institute/ImageDataStore1/Image\040Facility\040User\040Data   /mnt/imagedatastore  nfs rsize=32768,wsize=32768,hard,fg,lock,rw,nfsvers=3,tcp 0 0
+central-cluster:/ifs/Institute/ImageDataStore1/LIMS_user_data   /mnt/imagedatastore  nfs rsize=32768,wsize=32768,hard,fg,nolock,rw,nfsvers=3,tcp,user,_netdev 0 0
 ```
 
 
 Configure the web server
-====================================
+========================
 
 We need to put the apache conf file in the distribution in a folder so that apache will recognise it:
 
 ```
-sudo ln -s /srv/imagetrack/configuration/imagetrack_apache.conf /etc/httpd/conf.d/
+sudo ln -s /srv/imagetrack/Configuration/imagetrack_apache.conf /etc/httpd/conf.d/
 
 sudo systemctl restart httpd
+```
+
+We also need to remove the default ```/cgi-bin/``` configuration as it overrides the one in our package.  To do this we need to comment out the following line in ```/etc/httpd/conf/httpd.conf```
+
+```
+ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+```
+
+Install python dependencies
+===========================
+
+We need some additional python packages and these are detailed in ```requirements.txt```.  The python setup on CentOS8 is a bit weird in that there are 
+
+To install the OS packages we can run:
+
+```
+sudo dnf -y install python3-pymongo python3-bcrypt
 ```
 
 
