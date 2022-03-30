@@ -68,6 +68,50 @@ To install the OS packages we can run:
 sudo dnf -y install python3-pymongo python3-bcrypt
 ```
 
+Set up the database
+===================
+
+The back end for this system is a MongoDB database.  You will need to have a mongoDB server running, either locally or on a separate machine.
+
+If you're running on a system with authentication enabled, and not just on a locally accessible database, then you will need to create a suitable user for the system to use, and will need to create the collections for the system.
+
+The definition of the user will be:
+
+```
+db.createUser(
+  {
+    user: "imageuser",
+    pwd: "your_password_goes_here",
+    roles: [ { role: "readWrite", db: "imagetrack_database" } ]
+  }
+)
+```
+
+To create the collections you can use ```mongosh``` as a user with root level access (or ```DBAdmin``` on the ```imagetrack_database```).
+
+```
+use imagetrack_database
+db.createCollection("projects_collection")
+db.createCollection("people_collection")
+db.createCollection("configuration_collection")
+```
+
+Create a master configuration file
+==================================
+
+Finally you need to create a local configuration file to give the details of the database and the data folder to the system.
+
+Inside the imagetrack install folder you will find a folder called ```Configuration``` and inside there is a template file called ```example_conf.json```.  You need to make a copy of this called just ```conf.json```
+
+```
+cp example_conf.json conf.json
+```
+
+You then need to edit ```conf.json``` to add the details of the database connection and the data folder mount point.  This should then put the system into a working state.
+
+
+
+
 
 
 
