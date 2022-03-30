@@ -12,25 +12,16 @@ import cgitb
 cgitb.enable()
 
 def main():
-    # Set up the database connection
+    # Read the main configuration
+    server_conf = get_server_configuration()
 
-    with open(Path(__file__).parent.parent.parent / "Configuration/conf.json") as infh:
-        conf = json.loads(infh.read())
-
-    db_string = f"mongodb://{quote_plus(conf['username'])}:{quote_plus(conf['password'])}@{conf['server_address']}"
-    print("Connecting to",db_string)
-    client = MongoClient(db_string)
-
-    db = client.imagetrack_database
-    global projects
-    global people
-    global configuration
-    projects = db.projects_collection
-    people = db.people_collection
-    configuration = db.configuration_collection
+    # Connect to the database
+    connect_to_database(server_conf)
     
+    # Collect the CGI connection fields
     form = cgi.FieldStorage()
 
+    # Check the action and dispatch to the appropriate function
     if not "action" in form:
         send_response(False,"No Action")
         return
@@ -69,6 +60,24 @@ def main():
 
         elif form["action"].value == "add_comment":
             add_comment(person,form["folder"].value,form["comment_text"].value)
+
+
+def get_server_configuration():
+    with open(Path(__file__).parent.parent.parent / "Configuration/conf.json") as infh:
+        conf = json.loads(infh.read())
+    return conf
+
+def connect_to_database(conf):
+    db_string = f"mongodb://{quote_plus(conf['username'])}:{quote_plus(conf['password'])}@{conf['server_address']}"
+    client = MongoClient(db_string)
+
+    db = client.imagetrack_database
+    global projects
+    global people
+    global configuration
+    projects = db.projects_collection
+    people = db.people_collection
+    configuration = db.configuration_collection
 
 
 def send_response(success,message):

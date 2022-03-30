@@ -1,5 +1,6 @@
 {
     "server_address":"127.0.0.1",
     "username":"imageuser",
-    "password":"password_goes_here"
+    "password":"password_goes_here",
+    "data_folder": "/mnt/data"
 }
