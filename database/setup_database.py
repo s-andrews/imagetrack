@@ -2,10 +2,17 @@
 import json
 import bcrypt
 from pymongo import MongoClient
+from pathlib import Path
+from urllib.parse import quote_plus
 
 def main():
     # Set up the database connection
-    client = MongoClient()
+    with open(Path(__file__).parent.parent / "Configuration/conf.json") as infh:
+        conf = json.loads(infh.read())
+
+    db_string = f"mongodb://{quote_plus(conf['username'])}:{quote_plus(conf['password'])}@{conf['server_address']}"
+    print("Connecting to",db_string)
+    client = MongoClient(db_string)
     db = client.imagetrack_database
     global projects
     global people
