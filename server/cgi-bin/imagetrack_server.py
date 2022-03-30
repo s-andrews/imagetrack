@@ -4,6 +4,8 @@ import random
 from pathlib import Path
 from pymongo import MongoClient
 from bson.json_util import dumps
+import json
+from urllib.parse import quote_plus
 from datetime import date
 import cgi
 import cgitb
@@ -11,7 +13,14 @@ cgitb.enable()
 
 def main():
     # Set up the database connection
-    client = MongoClient()
+
+    with open(Path(__file__).parent.parent.parent / "Configuration/conf.json") as infh:
+        conf = json.loads(infh.read())
+
+    db_string = f"mongodb://{quote_plus(conf['username'])}:{quote_plus(conf['password'])}@{conf['server_address']}"
+    print("Connecting to",db_string)
+    client = MongoClient(db_string)
+
     db = client.imagetrack_database
     global projects
     global people
