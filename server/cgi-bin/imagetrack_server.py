@@ -8,7 +8,7 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
 from urllib.parse import quote_plus
-from datetime import date
+from datetime import date,datetime
 import cgi
 import cgitb
 cgitb.enable()
@@ -180,7 +180,7 @@ def add_comment(person,oid,text):
     """
     doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
     comments = doc["comments"]
-    comments.append({"date":str(date.today()), "text":text})
+    comments.append({"date":str(datetime.now().replace(microsecond=0)), "text":text})
 
     projects.update_one({"_id":ObjectId(oid)},{"$set": {"comments":comments}})
 
@@ -287,7 +287,7 @@ def new_project(person,form,conf):
 
     project = {
         "person_id": person["_id"],
-        "date": str(date.today()),
+        "date": str(datetime.now().replace(microsecond=0)),
         "folder": str(virtual_folder),
         "name": name,
         "instrument": instrument,

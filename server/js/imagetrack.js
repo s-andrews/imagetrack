@@ -314,13 +314,20 @@ function create_project () {
             success: function(new_project_details) {
 
                 // Add this to the list of projects and show its details
-                // Not the most elegant way to do this
-                // TODO: Be more elegant!
-                update_projects()
+                let t = $('#projecttable').DataTable();
+                add_project_row(t,new_project_details)
 
+                // Sort the table with newest projects on top
+                t.order(1,"desc")
+                // Redraw the table
+                t.draw()
 
                 // Remove the new project dialog
                 $("#newprojectdiv").modal("hide")
+
+                // Select the newly added project
+                update_selected_project(new_project_details["_id"]["$oid"])
+
 
             },
             error: function(message) {
@@ -387,21 +394,7 @@ function update_projects(){
 
                 for (let p in projects) {
                     let project = projects[p]
-                    let i = t.row.add([
-                        project["name"],
-                        project["date"],
-                        project["instrument"],
-                        project["modality"].join(", "),
-                        project["organism"],
-                        project["folder"]
-                    ]).index();
-
-                    // Now we can add the project oid to the tr as a 
-                    // data attribute so we can find the project oid
-                    // easily when someone clicks on it.
-                    console.log(t.rows(i).nodes().to$())
-                    t.rows(i).nodes().to$().attr("data-oid",project["_id"]["$oid"])
-
+                    add_project_row(t,project)
                 }
 
                 t.draw();
@@ -411,5 +404,21 @@ function update_projects(){
             }
         }
     )
+}
+
+function add_project_row(table, project) {
+    let i = table.row.add([
+        project["name"],
+        project["date"],
+        project["instrument"],
+        project["modality"].join(", "),
+        project["organism"],
+        project["folder"]
+    ]).index();
+
+    // Now we can add the project oid to the tr as a 
+    // data attribute so we can find the project oid
+    // easily when someone clicks on it.
+    table.rows(i).nodes().to$().attr("data-oid",project["_id"]["$oid"])
 
 }
