@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from pickletools import read_float8
 import bcrypt
 import random
 from pathlib import Path
@@ -51,7 +52,7 @@ def main():
             project_details(person,form["oid"].value)
 
         elif form["action"].value == "new_project":
-            new_project(person,form)
+            new_project(person,form,server_conf)
 
         elif form["action"].value == "new_user":
             new_user(person,form)
@@ -237,12 +238,13 @@ def checksession (sessioncode):
     return None
 
 
-def new_project(person,form):
+def new_project(person,form,conf):
     """
     Creates a new event and puts it into the database
 
     @person:  The hash of the person from the database
     @form:    The raw form from the CGI query
+    @conf:    The configuration for the server to get the base dir for projects
 
     @returns: Forwards the new project document to the json responder
     """
@@ -257,7 +259,17 @@ def new_project(person,form):
 
     # Base folder / Group / Person / date+name
 
-    folder = Path("c:/Users/andrewss/")
+    # Since the path to the root folder may not be the same on
+    # all machines we store two versions of the folder location
+    # A real one which is where the folder is located on the 
+    # computer running the back end for the web system, and a 
+    # virtual one which is a relative path from wherever the
+    # root folder is.  On a given machine we can then modify
+    # the displayed path to reflect the location of the folder
+    # on that machine.
+
+    real_folder = Path(conf["data_folder"])
+    virtual_folder = Path(".")
 
     folders = [person["group"],person["first_name"]+person["last_name"],str(date.today())+"_"+name]
 
@@ -267,12 +279,16 @@ def new_project(person,form):
         for c in bad_chars:
             f = f.replace(c,"_")
 
-        folder = folder.joinpath(f)
+        real_folder = real_folder.joinpath(f)
+        virtual_folder = virtual_folder.joinpath(f)
         
+    # Make the new folder
+    real_folder.mkdir(parents=True)
+
     project = {
         "person_id": person["_id"],
         "date": str(date.today()),
-        "folder": str(folder),
+        "folder": str(virtual_folder),
         "name": name,
         "instrument": instrument,
         "modality": modalities,
