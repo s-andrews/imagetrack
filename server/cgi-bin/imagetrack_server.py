@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from msilib.schema import Error
 from pickletools import read_float8
 import bcrypt
 import random
@@ -282,6 +283,22 @@ def new_project(person,form,conf):
         real_folder = real_folder.joinpath(f)
         virtual_folder = virtual_folder.joinpath(f)
         
+    # Check whether this folder exists already.  It might if they make multiple 
+    # projects on the same day with the same name.  If it does we just append 
+    # _001, _002 etc to the end until it's novel.
+
+    if real_folder.exists():
+        suffix = 1
+        while True:
+            if suffix == 100:
+                raise Error("Couldn't find unused folder name")
+            if not (real_folder.parent / (real_folder.name+"_"+str(suffix).zfill(3))).exists():
+                real_folder = real_folder.parent / (real_folder.name+"_"+str(suffix).zfill(3))
+                virtual_folder = virtual_folder.parent / (virtual_folder.name+"_"+str(suffix).zfill(3))
+                break
+        
+            suffix += 1
+
     # Make the new folder
     real_folder.mkdir(parents=True)
 
