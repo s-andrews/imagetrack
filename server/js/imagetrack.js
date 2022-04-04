@@ -111,13 +111,20 @@ function add_project_comment() {
 
 function select_project() {
 
-    // We pull some values directly out of the data so
-    // we can update the UI
+    // We used to update the UI directly, but that broke things
+    // when we wanted to select a project after creating it so
+    // we now just grab the oid.
     let table = $('#projecttable').DataTable();
-    let data = table.row( this ).data();
 
-    $("#selectedprojectname").text(data[0])
-    $("#selectedprojectfolder").text(data[5])    
+    // Clear out old information
+    $("#selectedprojectname").text("")
+    $("#selectedprojectfolder").text("")    
+
+    let t = $("#projecttags")
+    t.empty()
+
+    let c = $("#projectcomments")
+    c.empty()
 
     // We pull the project oid out of the row's data
     // attribute
@@ -127,6 +134,8 @@ function select_project() {
 }
 
 function update_selected_project (project_oid) {
+
+    console.log("Selecting"+project_oid)
 
     selected_project_oid = project_oid
 
@@ -141,8 +150,14 @@ function update_selected_project (project_oid) {
             },
             success: function(project_json) {
 
+
+                $("#selectedprojectname").text(project_json["name"])
+                $("#selectedprojectfolder").text(project_json["folder"])    
+
+
                 let t = $("#projecttags")
                 t.empty()
+            
 
                 for (let i in project_json["tags"]) {
                     t.append(`
@@ -232,6 +247,13 @@ function logout() {
     Cookies.remove("imagetrack_session_id")
     $("#maincontent").hide()
     $('#projecttable').DataTable().clear()
+
+    $("#selectedprojectname").text("")
+    $("#selectedprojectfolder").text("")    
+
+    $("#projecttags").empty()
+    $("#projectcomments").empty()
+
     $("#logindiv").modal("show")
 }
 
@@ -326,6 +348,7 @@ function create_project () {
                 $("#newprojectdiv").modal("hide")
 
                 // Select the newly added project
+                console.log(new_project_details)
                 update_selected_project(new_project_details["_id"]["$oid"])
 
 
@@ -397,7 +420,8 @@ function update_projects(){
                     add_project_row(t,project)
                 }
 
-                t.draw();
+                t.order(1,"desc")
+                t.draw()
             },
             error: function(message) {
                 $("#projectbody").clear()
