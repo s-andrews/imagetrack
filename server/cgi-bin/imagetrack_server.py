@@ -91,7 +91,14 @@ def send_json(data):
     print("Content-type: text/json; charset=utf-8\n\n"+dumps(data))
 
 def new_user(person,form):
+    """
+    Creates a new user
 
+    @person:   The person document for the person making the request
+    @form:     The raw CGI form for the request
+
+    @returns:  Sends a True value to the responder upon success
+    """
     if not person["admin"]:
         send_response(False,"Only Admins can make new users")
 
@@ -113,16 +120,44 @@ def new_user(person,form):
     
 
 def list_projects(person):
+    """
+    Gets all projects associated with a given user
+
+    @person:   The person document for the person making the request
+
+    @returns:  Forwards the project list to the json responder
+    """
     project_list = projects.find({"person_id":person["_id"]})
     send_json(project_list)
 
 
 def project_details(person,oid):
+    """
+    Retrieves a project document for a given oid
+
+    @person:   The person document for the person making the request
+    @oid:      The oid for the project
+
+    @returns:  Forwards the project document to the json responder
+    """
     project_details = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
     send_json(project_details)
 
 
 def add_tag(person,oid,tag_name, tag_value):
+    """
+    Adds or replaces a tag in an existing project.  Will define a new
+    tag if it doesn't exist or will update the value of an existing
+    tag.
+
+    @person:   The person document for the person adding the comment
+    @oid:      The oid for the project
+    @tag_name: The name of the tag
+    @tag_name: The text value for the tag
+
+    @returns: Forwards a true value to the responder
+    """
+
     doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
     tags = doc["tags"]
     tags[tag_name] = tag_value
@@ -133,6 +168,15 @@ def add_tag(person,oid,tag_name, tag_value):
 
 
 def add_comment(person,oid,text):
+    """
+    Adds a comment to an existing project
+
+    @person: The person document for the person adding the comment
+    @oid:    The oid for the project
+    @text:   The text of the comment
+
+    @returns: Forwards a true value to the responder
+    """
     doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
     comments = doc["comments"]
     comments.append({"date":str(date.today()), "text":text})
@@ -144,10 +188,26 @@ def add_comment(person,oid,text):
 
 
 def get_configuration():
+    """
+    Retrieve the configuration document from the database
+
+    @returns: The configuration document
+    """
+
     config = configuration.find_one({})
     send_json(config)
 
 def process_login (email,password):
+    """
+    Validates an email / password combination and generates
+    a session id to authenticate them in future
+
+    @email:     Their email (username)
+    @password:  The unhashed version of their password
+
+    @returns:   Forwards the session code to the json response
+    """
+
     person = people.find_one({"email":email})
 
     # Check the password
@@ -161,6 +221,14 @@ def process_login (email,password):
 
 
 def checksession (sessioncode):
+    """
+    Validates a session code and retrieves a person document
+
+    @sessioncode : The session code from the browser cookie
+
+    @returns:      The document for the person associated with this session
+    """
+
     person = people.find_one({"sessioncode":sessioncode})
 
     if person:
@@ -172,6 +240,11 @@ def checksession (sessioncode):
 def new_project(person,form):
     """
     Creates a new event and puts it into the database
+
+    @person:  The hash of the person from the database
+    @form:    The raw form from the CGI query
+
+    @returns: Forwards the new project document to the json responder
     """
 
     name = form["name"].value
@@ -188,7 +261,6 @@ def new_project(person,form):
 
     folders = [person["group"],person["first_name"]+person["last_name"],str(date.today())+"_"+name]
 
-    # TODO: Remove invalid characters
     bad_chars = "#%&{}\\\/<>*?$!'\":+`|="
 
     for f in folders:
@@ -203,7 +275,6 @@ def new_project(person,form):
         "folder": str(folder),
         "name": name,
         "instrument": instrument,
-        # TODO: Deal with multiple modalities
         "modality": modalities,
         "organism": organism,
         "tags": {},
@@ -217,7 +288,12 @@ def new_project(person,form):
 
 def generate_id(size):
     """
-    Generic function used for creating IDs
+    Generic function used for creating IDs.  Makes random IDs
+    just using uppercase letters
+
+    @size:    The length of ID to generate
+
+    @returns: A random ID of the requested size
     """
     letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
