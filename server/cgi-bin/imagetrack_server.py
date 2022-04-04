@@ -4,6 +4,7 @@ import random
 from pathlib import Path
 from pymongo import MongoClient
 from bson.json_util import dumps
+from bson.objectid import ObjectId
 import json
 from urllib.parse import quote_plus
 from datetime import date
@@ -47,7 +48,7 @@ def main():
             list_projects(person)
 
         elif form["action"].value == "project_details":
-            project_details(person,form["folder"].value)
+            project_details(person,form["oid"].value)
 
         elif form["action"].value == "new_project":
             new_project(person,form)
@@ -56,10 +57,10 @@ def main():
             new_user(person,form)
 
         elif form["action"].value == "add_tag":
-            add_tag(person,form["folder"].value,form["tag_name"].value,form["tag_value"].value)
+            add_tag(person,form["oid"].value,form["tag_name"].value,form["tag_value"].value)
 
         elif form["action"].value == "add_comment":
-            add_comment(person,form["folder"].value,form["comment_text"].value)
+            add_comment(person,form["oid"].value,form["comment_text"].value)
 
 
 def get_server_configuration():
@@ -116,27 +117,27 @@ def list_projects(person):
     send_json(project_list)
 
 
-def project_details(person,folder):
-    project_details = projects.find_one({"person_id":person["_id"], "folder":folder})
+def project_details(person,oid):
+    project_details = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
     send_json(project_details)
 
 
-def add_tag(person,folder,tag_name, tag_value):
-    doc = projects.find_one({"person_id":person["_id"], "folder":folder})
+def add_tag(person,oid,tag_name, tag_value):
+    doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
     tags = doc["tags"]
     tags[tag_name] = tag_value
 
-    projects.update_one({"folder":folder},{"$set": {"tags":tags}})
+    projects.update_one({"_id":ObjectId(oid)},{"$set": {"tags":tags}})
 
     send_response(True,"")
 
 
-def add_comment(person,folder,text):
-    doc = projects.find_one({"person_id":person["_id"], "folder":folder})
+def add_comment(person,oid,text):
+    doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
     comments = doc["comments"]
     comments.append({"date":str(date.today()), "text":text})
 
-    projects.update_one({"folder":folder},{"$set": {"comments":comments}})
+    projects.update_one({"_id":ObjectId(oid)},{"$set": {"comments":comments}})
 
     send_response(True,"")
 

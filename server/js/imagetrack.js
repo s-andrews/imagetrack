@@ -1,6 +1,7 @@
 const backend = "/cgi-bin/imagetrack_server.py"
 var session = ""
 var configuration = ""
+var selected_project_oid = ""
 
 $( document ).ready(function() {
     show_login()
@@ -57,7 +58,6 @@ function suggest_tags() {
 
 
 function add_project_tag() {
-    let folder = $("#selectedprojectfolder").text()
     let tag_name = $("#projecttagname").val()
     let tag_value = $("#projecttagvalue").val()
 
@@ -68,14 +68,14 @@ function add_project_tag() {
             data: {
                 action: "add_tag",
                 session: session,
-                folder: folder,
+                oid: selected_project_oid,
                 tag_name: tag_name,
                 tag_value: tag_value
             },
             success: function(project_json) {
                 $("#projecttagname").val("")
                 $("#projecttagvalue").val("")
-                update_selected_project(folder)
+                update_selected_project(selected_project_oid)
             },
             error: function(message) {
                 console.log("Failed to add tag")
@@ -85,7 +85,6 @@ function add_project_tag() {
 }
 
 function add_project_comment() {
-    let folder = $("#selectedprojectfolder").text()
     let comment_text = $("#projectcommenttext").val()
 
     $.ajax(
@@ -95,12 +94,12 @@ function add_project_comment() {
             data: {
                 action: "add_comment",
                 session: session,
-                folder: folder,
+                oid: selected_project_oid,
                 comment_text: comment_text
             },
             success: function(project_json) {
                 $("#projectcommenttext").val("")
-                update_selected_project(folder)
+                update_selected_project(selected_project_oid)
             },
             error: function(message) {
                 console.log("Failed to add comment")
@@ -111,20 +110,25 @@ function add_project_comment() {
 
 
 function select_project() {
+
+    // We pull some values directly out of the data so
+    // we can update the UI
     let table = $('#projecttable').DataTable();
     let data = table.row( this ).data();
 
-    // We use the folder as the unique key to get the project
-    // details from the back end.  We'll get the full details
-    // and show them in a div below.
-    let folder = data[5]
-
     $("#selectedprojectname").text(data[0])
-    $("#selectedprojectfolder").text(folder)    
-    update_selected_project(folder)
+    $("#selectedprojectfolder").text(data[5])    
+
+    // We pull the project oid out of the row's data
+    // attribute
+    let oid = $(this).data("oid")
+
+    update_selected_project(oid)
 }
 
-function update_selected_project (folder) {
+function update_selected_project (project_oid) {
+
+    selected_project_oid = project_oid
 
     $.ajax(
         {
@@ -133,7 +137,7 @@ function update_selected_project (folder) {
             data: {
                 action: "project_details",
                 session: session,
-                folder: folder
+                oid: project_oid
             },
             success: function(project_json) {
 
