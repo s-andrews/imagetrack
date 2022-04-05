@@ -150,15 +150,25 @@ function update_selected_project (project_oid) {
             },
             success: function(project_json) {
 
-                console.log(project_json["files"])
+                console.log(project_json["extensions"])
 
                 $("#selectedprojectname").text(project_json["name"])
                 $("#selectedprojectfolder").text(project_json["folder"])    
 
+                // Create the file tree so they can see the files in there
                 let filetree = $("#filetree")
                 filetree.empty()
                 filetree.jstree({'core': {'data':[project_json["files"]]}})
 
+
+                // Create the table of extensions
+                let et = $("#extensions").DataTable({paging: false, autoWidth: false, searching: false})
+                for (let i in project_json["extensions"]) {
+                    et.row.add([i,project_json["extensions"][i]["files"],project_json["extensions"][i]["size"],readable_size(project_json["extensions"][i]["size"])])
+                }
+
+                et.order([2,"desc"])
+                et.draw()
 
                 let t = $("#projecttags")
                 t.empty()
@@ -200,6 +210,22 @@ function update_selected_project (project_oid) {
 
 }
 
+function readable_size(bytes) {
+    if (bytes > 1024**4) {
+        return (bytes/(1024**4)).toFixed(1)+" TB"
+    }
+    if (bytes > 1024**3) {
+        return (bytes/(1024**3)).toFixed(1)+" GB"
+    }
+    if (bytes > 1024**2) {
+        return (bytes/(1024**2)).toFixed(1)+" MB"
+    }
+    if (bytes > 1024) {
+        return (bytes/1024).toFixed(1)+" kB"
+    }
+        return bytes+" B"
+
+}
 
 function show_login() {
 
