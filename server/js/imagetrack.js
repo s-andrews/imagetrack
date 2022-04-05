@@ -150,10 +150,14 @@ function update_selected_project (project_oid) {
             },
             success: function(project_json) {
 
-                console.log(project_json)
-                
+                console.log(project_json["files"])
+
                 $("#selectedprojectname").text(project_json["name"])
                 $("#selectedprojectfolder").text(project_json["folder"])    
+
+                let filetree = $("#filetree")
+                filetree.empty()
+                filetree.jstree({'core': {'data':[project_json["files"]]}})
 
 
                 let t = $("#projecttags")

@@ -201,7 +201,7 @@ def collate_files(root_folder):
             if not node[i]: # There's nothing under this so it's a file (TODO: Check!)
                 js["children"].append({
                     "text": i,
-                    "icon": "file.png",
+                    "icon": "images/file.png",
                     "state": {
                         "opened": False,
                         "disabled": False,
@@ -213,7 +213,7 @@ def collate_files(root_folder):
                 # It's a folder
                 new_node = {
                     "text": i,
-                    "icon": "folder.png",
+                    "icon": "images/folder.png",
                     "state": {
                         "opened": False,
                         "disabled": False,
@@ -226,7 +226,7 @@ def collate_files(root_folder):
                 process_node(new_node,node[i])
         
     js_tree = {"text": root_folder.name,
-                "icon": "folder.png",
+                "icon": "images/folder.png",
                 "state": {
                     "opened": False,
                     "disabled": False,

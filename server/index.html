@@ -11,6 +11,9 @@
     <!-- Data Tables -->
     <link href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
+    <!-- JSTree -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
     <!-- CSS -->
     <link href="css/imagetrack.css" rel="stylesheet">
 
@@ -88,6 +91,25 @@
 
           <div class="row">
             <h2>Files</h2>
+          </div>
+
+          <div class="row">
+            <div id="filetree" class="col-md-6"></div>
+            <div class="col-md-6">
+              <table id="extensions">
+                <thead>
+                  <tr>
+                    <th>Extension</th>
+                    <th>File Count</th>
+                    <th>Size(bytes)</th>
+                    <th>Size(readable)</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            </div>
           </div>
 
         </div>
@@ -184,6 +206,9 @@
     <!-- JQuery which we're still using even if bootstrap doesn't need it any more -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
  
+    <!-- JSTree for file trees -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
     <!-- Data Tables -->
     <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
