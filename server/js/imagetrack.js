@@ -150,7 +150,8 @@ function update_selected_project (project_oid) {
             },
             success: function(project_json) {
 
-
+                console.log(project_json)
+                
                 $("#selectedprojectname").text(project_json["name"])
                 $("#selectedprojectfolder").text(project_json["folder"])    
 

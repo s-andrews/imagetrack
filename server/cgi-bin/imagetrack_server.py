@@ -50,7 +50,7 @@ def main():
             list_projects(person)
 
         elif form["action"].value == "project_details":
-            project_details(person,form["oid"].value)
+            project_details(person,form["oid"].value, server_conf["data_folder"])
 
         elif form["action"].value == "new_project":
             new_project(person,form,server_conf)
@@ -133,7 +133,7 @@ def list_projects(person):
     send_json(project_list)
 
 
-def project_details(person,oid):
+def project_details(person,oid, data_folder):
     """
     Retrieves a project document for a given oid
 
@@ -143,8 +143,99 @@ def project_details(person,oid):
     @returns:  Forwards the project document to the json responder
     """
     project_details = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
+
+    # We also need to get the list of files stored under this project
+    # We'll end up summarising this in a few ways so we collect the 
+    # raw data first.
+
+    root_folder = Path(data_folder) / project_details["folder"]
+
+    file_tree, extension_details = collate_files(root_folder)
+
+    project_details["files"] = file_tree
+    project_details["extensions"] = extension_details
+
     send_json(project_details)
 
+def collate_files(root_folder):
+    """
+    Iterates through a folder to get the full list of files and folders
+    and their respective sizes
+
+    @root_folder: The folder in which to profile things
+
+    @returns: A tree structure with all of the file details
+    """
+    file_tree = {}
+    extension_stats = {}
+
+    for i in root_folder.rglob("*"):
+
+        if i.is_file():
+            suffix = i.suffix
+            if suffix:
+                suffix = suffix[1:]
+                if not suffix in extension_stats:
+                    extension_stats[suffix] = {"files":0, "size":0}
+                
+                extension_stats[suffix]["size"] += i.stat().st_size
+                extension_stats[suffix]["files"] += 1
+
+
+
+        parts = i.relative_to(root_folder).parts
+        
+        node = file_tree
+
+        for part in parts:
+            if not part in node:
+                node[part] = {}
+            
+            node = node[part]
+
+
+    # Now we need to turn the structure we have into something compatible with 
+    # jstree
+    def process_node(js,node):
+        for i in node.keys():
+            if not node[i]: # There's nothing under this so it's a file (TODO: Check!)
+                js["children"].append({
+                    "text": i,
+                    "icon": "file.png",
+                    "state": {
+                        "opened": False,
+                        "disabled": False,
+                        "selected": False
+                    },
+                    "children": []
+                })
+            else:
+                # It's a folder
+                new_node = {
+                    "text": i,
+                    "icon": "folder.png",
+                    "state": {
+                        "opened": False,
+                        "disabled": False,
+                        "selected": False
+                    },
+                    "children": []
+                }
+                js["children"].append(new_node)
+
+                process_node(new_node,node[i])
+        
+    js_tree = {"text": root_folder.name,
+                "icon": "folder.png",
+                "state": {
+                    "opened": False,
+                    "disabled": False,
+                    "selected": False
+                },
+                "children": []}
+    process_node(js_tree,file_tree)
+
+    return(js_tree,extension_stats)
 
 def add_tag(person,oid,tag_name, tag_value):
     """
