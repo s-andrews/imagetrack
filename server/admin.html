@@ -39,7 +39,7 @@
                     <th>Group</th>
                     <th>Admin</th>
                     <th>Edit</th>
-                    <th>Delete</th>
+                    <th>Disable</th>
                 </tr>
             </thead>
             <tbody id="personbody">
@@ -81,30 +81,66 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h3 class="modal-title"><img src="images/imagetrack_justcells.svg", width="20%"> Create New Project</h3>
+          <h3 class="modal-title"><img src="images/imagetrack_justcells.svg", width="20%"> Create New Person</h3>
         </div>
         <div class="modal-body">
           <form>
-            <div class="form-group">
-              <label for="job_name">Project Name</label>
-              <input type="text" class="form-control" id="project_name" placeholder="My New Project Name">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="person_first_name">First Name</label>
+                  <input type="text" class="form-control" id="person_first_name" placeholder="First Name">
+                </div>
+              </div>
             </div>
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
-                  <label for="project_instrument">Group</label>
-                  <select class="form-control" id="project_instrument">
+                  <label for="person_last_name">Last Name</label>
+                  <input type="text" class="form-control" id="person_last_name" placeholder="Last Name">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="person_email">Email</label>
+                  <input type="text" class="form-control" id="person_email_name" placeholder="Email">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="person_group">Group</label>
+                  <select class="form-control" id="person_group">
                     <option>[Loading Config]</option>
                   </select>
                 </div>
               </div>
             </div>
-
+            
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="person_password">Password</label>
+                  <input type="password" class="form-control" id="person_password" placeholder="Password">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="form-check-label" for="person_admin">Make Admin</label>
+                  <input type="checkbox" class="form-check-input" id="person_admin">
+                </div>
+              </div>
+            </div>
 
           </form>
         </div>
         <div class="modal-footer">
-          <button id="create_project" type="button" class="btn btn-primary">Add Person</button>
+          <button id="create_person" type="button" class="btn btn-primary">Add Person</button>
         </div>
       </div>
     </div>

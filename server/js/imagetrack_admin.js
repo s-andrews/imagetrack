@@ -13,29 +13,13 @@ function load_configuration () {
                 success: function(configuration_data) {
                     configuration = configuration_data
 
-                    // Update the new project form
-                    let s = $("#project_instrument")
+                    // Update the groups
+                    let s = $("#person_group")
                     s.empty()
-                    for (let i in configuration.instruments) {
-                        s.append(`<option>${configuration.instruments[i]}</option>`)
+                    configuration.groups.sort()
+                    for (let i in configuration.groups) {
+                        s.append(`<option>${configuration.groups[i]}</option>`)
                     }
-
-                    s = $("#project_modality")
-                    s.empty()
-                    for (let i in configuration.modalities) {
-                        s.append(`<option>${configuration.modalities[i]}</option>`)
-                    }
-
-                    s = $("#project_organism")
-                    s.empty()
-                    for (let i in configuration.organisms) {
-                        s.append(`<option>${configuration.organisms[i]}</option>`)
-                    }
-
-                    // Run the function to update tag suggestions to populate the list
-                    suggest_tags()
-
-
                 },
                 error: function(message) {
                     console.log("Failed to retrieve configuration")
@@ -134,7 +118,7 @@ function add_person_row(table, person) {
         person["group"],
         person["admin"],
         "<button class='btn btn-primary editperson'>Edit</button>",
-        "<button class='btn btn-danger deleteperson'>Delete</button>"
+        "<button class='btn btn-danger deleteperson'>Disable</button>"
     ]).index();
 
     // Now we can add the project oid to the tr as a 
@@ -152,7 +136,7 @@ function load_initial_content() {
     update_people()
 
     // Load the config
-    // load_configuration()
+    load_configuration()
 
 }
 
@@ -163,4 +147,11 @@ function close_content() {
 
 function initial_setup () {
     $("#persontable").DataTable()
+
+    // Action for starting a new person
+    $("#newperson").click(new_person)
+
+    // Action for submitting a new person
+    $("#create_person").click(create_person)
+    
 }
