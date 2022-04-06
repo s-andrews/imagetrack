@@ -36,7 +36,10 @@ $( document ).ready(function() {
     $("#addprojectcomment").click(add_project_comment)
 
     // Make the extensions table a Data Table
-    $("#extensions").DataTable({paging: false, autoWidth: false, searching: false})
+    $("#extensions").DataTable({paging: false, autoWidth: false, searching: false, info: false})
+
+    // Make the main project list a Data Table
+    $('#projecttable').DataTable({lengthChange: false, pageLength: 5});
 
     // Make the file tree a jstree
     $("#filetree").jstree({'core': {'data':[]}})
@@ -116,9 +119,7 @@ function add_project_comment() {
 
 function select_project() {
 
-    // We used to update the UI directly, but that broke things
-    // when we wanted to select a project after creating it so
-    // we now just grab the oid.
+    // We just grab the oid from the table.
     let table = $('#projecttable').DataTable();
 
     // Clear out old information
@@ -162,7 +163,11 @@ function update_selected_project (project_oid) {
 
                 // Create the file tree so they can see the files in there
                 let filetree = $("#filetree")
+                // Set the new data
                 filetree.jstree(true).settings.core.data = [project_json["files"]]
+                // Collapse the tree
+                filetree.jstree("close_all",-1)
+                // Redraw
                 filetree.jstree(true).refresh()
 
                 // Create the table of extensions
@@ -284,7 +289,7 @@ function logout() {
     session_id = ""
     Cookies.remove("imagetrack_session_id")
     $("#maincontent").hide()
-    $('#projecttable').DataTable().clear()
+    $('#projecttable').DataTable().rows().remove()
 
     $("#selectedprojectname").text("")
     $("#selectedprojectfolder").text("")    
