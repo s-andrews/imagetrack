@@ -35,6 +35,8 @@ $( document ).ready(function() {
     // Action when adding a new project comment
     $("#addprojectcomment").click(add_project_comment)
 
+    // Make the extensions table a Data Table
+    $("#extensions").DataTable({paging: false, autoWidth: false, searching: false})
 
 })
 
@@ -162,7 +164,10 @@ function update_selected_project (project_oid) {
 
 
                 // Create the table of extensions
-                let et = $("#extensions").DataTable({paging: false, autoWidth: false, searching: false})
+                let et = $("#extensions").DataTable()
+
+                et.rows().remove()
+                
                 for (let i in project_json["extensions"]) {
                     et.row.add([i,project_json["extensions"][i]["files"],project_json["extensions"][i]["size"],readable_size(project_json["extensions"][i]["size"])])
                 }
