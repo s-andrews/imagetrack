@@ -34,7 +34,7 @@ def main():
 
     elif form["action"].value == "validate_session":
         person = checksession(form["session"].value)
-        send_response(True,person["first_name"]+" "+person["last_name"])
+        send_response(True,person["admin"])
 
 
     elif form["action"].value == "configuration":
@@ -46,6 +46,9 @@ def main():
         if person is None:
             send_response(False,"Unknown session")
         
+        elif form["action"].value == "list_people":
+            list_people(person)
+
         elif form["action"].value == "list_projects":
             list_projects(person)
 
@@ -85,9 +88,9 @@ def connect_to_database(conf):
 
 def send_response(success,message):
     if success:
-        print("Content-type: text/plain; charset=utf-8\n\nSuccess: "+message, end="")
+        print("Content-type: text/plain; charset=utf-8\n\nSuccess: "+str(message), end="")
     else:
-        print("Content-type: text/plain; charset=utf-8\n\nFail: "+message, end="")
+        print("Content-type: text/plain; charset=utf-8\n\nFail: "+str(message), end="")
 
 def send_json(data):
     print("Content-type: text/json; charset=utf-8\n\n"+dumps(data))
@@ -131,6 +134,27 @@ def list_projects(person):
     """
     project_list = projects.find({"person_id":person["_id"]})
     send_json(project_list)
+
+
+
+def list_people(person):
+    """
+    Gets the details of all users.  Only allowed to be called by
+    admins.  Strips out the password and session details
+
+    @person:   The person document for the person making the request
+
+    @returns:  Forwards the people list to the json responder
+    """
+
+    if not person["admin"]:
+        send_response(False, "Only admins can do this")
+        return
+
+    person_list = people.find({})
+    #TODO: Strip out unwanted fields.
+    send_json(person_list)
+
 
 
 def project_details(person,oid, data_folder):

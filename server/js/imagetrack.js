@@ -2,6 +2,7 @@ const backend = "/cgi-bin/imagetrack_server.py"
 var session = ""
 var configuration = ""
 var selected_project_oid = ""
+var is_admin = false
 
 $( document ).ready(function() {
     show_login()
@@ -17,33 +18,7 @@ $( document ).ready(function() {
     // Action when they log out
     $("#logout").click(logout)
 
-    // Action for starting a new project
-    $("#newproject").click(new_project)
-
-    // Action for submitting a new project
-    $("#create_project").click(create_project)
-
-    // Action when clicking on a project
-    $('#projecttable tbody').on('click', 'tr', select_project)
-
-    // Make tag name suggestions
-    $("#projecttagname").keyup(suggest_tags);
-
-    // Action when adding a new project tag
-    $("#addprojecttag").click(add_project_tag)
-
-    // Action when adding a new project comment
-    $("#addprojectcomment").click(add_project_comment)
-
-    // Make the extensions table a Data Table
-    $("#extensions").DataTable({paging: false, autoWidth: false, searching: false, info: false})
-
-    // Make the main project list a Data Table
-    $('#projecttable').DataTable({lengthChange: false, pageLength: 5});
-
-    // Make the file tree a jstree
-    $("#filetree").jstree({'core': {'data':[]}})
-
+    initial_setup()
 })
 
 
@@ -70,7 +45,7 @@ function show_login() {
                         show_login()
                         return
                     }
-                    var realname = session_string.substring(9)
+                    is_admin = session_string.substring(9) === 'True'
                     $("#logindiv").modal("hide")
 
                     load_initial_content()
@@ -90,15 +65,9 @@ function show_login() {
 
 function logout() {
     session_id = ""
+    is_admin = false
     Cookies.remove("imagetrack_session_id")
-    $("#maincontent").hide()
-    $('#projecttable').DataTable().rows().remove()
-
-    $("#selectedprojectname").text("")
-    $("#selectedprojectfolder").text("")    
-
-    $("#projecttags").empty()
-    $("#projectcomments").empty()
+    close_content()
 
     $("#logindiv").modal("show")
 }

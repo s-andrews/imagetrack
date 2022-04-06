@@ -13,7 +13,7 @@
 
 
 /* Change cursor when hovering main project list, need to tighten this though */
-td {
+#projecttable td{
     cursor: pointer;
 }
 

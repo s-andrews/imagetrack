@@ -1,3 +1,33 @@
+function initial_setup () {
+        // Action for starting a new project
+        $("#newproject").click(new_project)
+
+        // Action for submitting a new project
+        $("#create_project").click(create_project)
+    
+        // Action when clicking on a project
+        $('#projecttable tbody').on('click', 'tr', select_project)
+    
+        // Make tag name suggestions
+        $("#projecttagname").keyup(suggest_tags);
+    
+        // Action when adding a new project tag
+        $("#addprojecttag").click(add_project_tag)
+    
+        // Action when adding a new project comment
+        $("#addprojectcomment").click(add_project_comment)
+    
+        // Make the extensions table a Data Table
+        $("#extensions").DataTable({paging: false, autoWidth: false, searching: false, info: false})
+    
+        // Make the main project list a Data Table
+        $('#projecttable').DataTable({lengthChange: false, pageLength: 5});
+    
+        // Make the file tree a jstree
+        $("#filetree").jstree({'core': {'data':[]}})
+    
+}
+
 function suggest_tags() {
     let text = $("#projecttagname").val().toLowerCase()
 
@@ -353,4 +383,15 @@ function load_initial_content() {
     // Load the config
     load_configuration()
 
+}
+
+function close_content() {
+    $("#maincontent").hide()
+    $('#projecttable').DataTable().rows().remove()
+
+    $("#selectedprojectname").text("")
+    $("#selectedprojectfolder").text("")    
+
+    $("#projecttags").empty()
+    $("#projectcomments").empty()
 }
