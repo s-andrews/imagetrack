@@ -38,6 +38,9 @@ $( document ).ready(function() {
     // Make the extensions table a Data Table
     $("#extensions").DataTable({paging: false, autoWidth: false, searching: false})
 
+    // Make the file tree a jstree
+    $("#filetree").jstree({'core': {'data':[]}})
+
 })
 
 function suggest_tags() {
@@ -159,15 +162,14 @@ function update_selected_project (project_oid) {
 
                 // Create the file tree so they can see the files in there
                 let filetree = $("#filetree")
-                filetree.empty()
-                filetree.jstree({'core': {'data':[project_json["files"]]}})
-
+                filetree.jstree(true).settings.core.data = [project_json["files"]]
+                filetree.jstree(true).refresh()
 
                 // Create the table of extensions
                 let et = $("#extensions").DataTable()
 
                 et.rows().remove()
-                
+
                 for (let i in project_json["extensions"]) {
                     et.row.add([i,project_json["extensions"][i]["files"],project_json["extensions"][i]["size"],readable_size(project_json["extensions"][i]["size"])])
                 }
