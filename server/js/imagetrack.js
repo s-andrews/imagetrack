@@ -123,6 +123,10 @@ function select_project() {
     let table = $('#projecttable').DataTable();
 
     // Clear out old information
+
+    $("#projectdetails").hide()
+    $("#projectloading").show()
+
     $("#selectedprojectname").text("")
     $("#selectedprojectfolder").text("")    
 
@@ -141,8 +145,6 @@ function select_project() {
 
 function update_selected_project (project_oid) {
 
-    console.log("Selecting"+project_oid)
-
     selected_project_oid = project_oid
 
     $.ajax(
@@ -155,8 +157,6 @@ function update_selected_project (project_oid) {
                 oid: project_oid
             },
             success: function(project_json) {
-
-                console.log(project_json["extensions"])
 
                 $("#selectedprojectname").text(project_json["name"])
                 $("#selectedprojectfolder").text(project_json["folder"])    
@@ -211,6 +211,7 @@ function update_selected_project (project_oid) {
                     `)
                 }
 
+                $("#projectloading").hide()
                 $("#projectdetails").show()
             },
             error: function(message) {

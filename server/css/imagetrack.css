@@ -21,6 +21,21 @@ td {
     display: none;
 }
 
+#projectloading {
+    padding: 2em;
+    font-size: larger;
+    display: none;
+    color: darkgray;
+    animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+
 h2 {
     padding-top: 1em;
 }
