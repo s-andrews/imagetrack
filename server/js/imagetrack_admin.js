@@ -45,6 +45,7 @@ function create_person () {
     let last_name = $("#person_last_name").val()
     let group = $("#person_group").val()
     let email = $("#person_email").val()
+    let password = $("#person_password").val()
     let admin = $("#person_admin").val()
 
     $.ajax(
@@ -57,13 +58,15 @@ function create_person () {
                 first_name: first_name,
                 last_name: last_name,
                 group: group,
-                email: email
+                email: email,
+                password: password,
+                admin: admin
             },
             success: function(new_person_details) {
 
                 // Add this to the list of people and show its details
                 let t = $('#persontable').DataTable();
-                add_project_row(t,new_person_details)
+                add_person_row(t,new_person_details)
 
                 // Redraw the table
                 t.draw()

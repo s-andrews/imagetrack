@@ -1,6 +1,43 @@
 {
-    "server_address":"127.0.0.1",
-    "username":"imageuser",
-    "password":"password_goes_here",
-    "data_folder": "/mnt/data"
+    "server": {
+        "address":"127.0.0.1",
+        "username":"imageuser",
+        "password":"password_goes_here",
+        "data_folder": "/mnt/data"
+    },
+    "instruments":[
+        "Microscope 1",
+        "Microscope 2"
+    ],
+    "modalities":[
+        "Wide-field fluorescence",
+        "Brightfield/transmitted light",
+        "Differential Interference Contrast (DIC)",
+        "Point-scanning confocal",
+        "Spinning disk confocal",
+        "Multi-photon",
+        "SIM super resolution",
+        "STORM super resolution",
+        "High content",
+        "Ultra-high content",
+        "Laser microdissection/laser capture",
+        "Total internal reflection fluorescence (TIRF)",
+        "Fluorescence correlation spectroscopy (FCS)",
+        "Fluorescence lifetime (FLIM)",
+        "Forster Resonance Energy Transfer (FRET)"
+    ],
+    "groups":[
+        "Group1",
+        "Group2"
+    ],
+
+    "organisms" : [
+        "Human (Homo sapiens)",
+        "Mouse (Mus musculus)",
+        "Rat (Rattus norvegicus)",
+        "Fly (Drosophila melanogaster",
+        "Worm (Caenorhabditis elegans)",
+        "E.coli"
+    ]
+    
 }

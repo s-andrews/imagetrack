@@ -12,6 +12,7 @@ from urllib.parse import quote_plus
 from datetime import date,datetime
 import cgi
 import cgitb
+import copy
 cgitb.enable()
 
 def main():
@@ -38,7 +39,7 @@ def main():
 
 
     elif form["action"].value == "configuration":
-        get_configuration()
+        get_configuration(server_conf)
 
     else:
         # Everything else needs validation so let's check that first
@@ -58,8 +59,8 @@ def main():
         elif form["action"].value == "new_project":
             new_project(person,form,server_conf)
 
-        elif form["action"].value == "new_user":
-            new_user(person,form)
+        elif form["action"].value == "new_person":
+            new_person(person,form)
 
         elif form["action"].value == "add_tag":
             add_tag(person,form["oid"].value,form["tag_name"].value,form["tag_value"].value)
@@ -74,16 +75,15 @@ def get_server_configuration():
     return conf
 
 def connect_to_database(conf):
-    db_string = f"mongodb://{quote_plus(conf['username'])}:{quote_plus(conf['password'])}@{conf['server_address']}"
+    db_string = f"mongodb://{quote_plus(conf['server']['username'])}:{quote_plus(conf['server']['password'])}@{conf['server']['address']}"
     client = MongoClient(db_string)
 
     db = client.imagetrack_database
+
     global projects
     global people
-    global configuration
     projects = db.projects_collection
     people = db.people_collection
-    configuration = db.configuration_collection
 
 
 def send_response(success,message):
@@ -95,7 +95,7 @@ def send_response(success,message):
 def send_json(data):
     print("Content-type: text/json; charset=utf-8\n\n"+dumps(data))
 
-def new_user(person,form):
+def new_person(person,form):
     """
     Creates a new user
 
@@ -119,9 +119,9 @@ def new_user(person,form):
         "shared_with": []
     }
 
-    people.insert_one(new_user)
-
-    send_response(True,"")
+    new_user["_id"] = people.insert_one(new_user).inserted_id
+    
+    send_json(new_user)
     
 
 def list_projects(person):
@@ -307,15 +307,15 @@ def add_comment(person,oid,text):
     send_response(True,"")
 
 
-
-def get_configuration():
+def get_configuration(server_conf):
     """
-    Retrieve the configuration document from the database
+    Send the configuraton document, minus the server details
 
     @returns: The configuration document
     """
 
-    config = configuration.find_one({})
+    config = copy.deepcopy(server_conf)
+    config.pop("server",None)
     send_json(config)
 
 def process_login (email,password):

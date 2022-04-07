@@ -101,7 +101,7 @@ function process_login() {
                 $("#loginerror").hide()
                 session = sections[1]
 
-                Cookies.set("imagetrack_session_id", session, { secure: false })
+                Cookies.set("imagetrack_session_id", session, { secure: false, sameSite: 'strict' })
                 show_login()
             },
             error: function(message) {
