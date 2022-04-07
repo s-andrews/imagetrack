@@ -151,8 +151,12 @@ def list_people(person):
         send_response(False, "Only admins can do this")
         return
 
-    person_list = people.find({})
-    #TODO: Strip out unwanted fields.
+    person_list = list(people.find({}))
+    for person in person_list:
+         person.pop("password",None)
+         person.pop("sessioncode",None)
+         person.pop("reset_code",None)
+
     send_json(person_list)
 
 
