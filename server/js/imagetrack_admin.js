@@ -45,8 +45,20 @@ function new_person() {
 
 function edit_person() {
         console.log(this)
-        // We just grab the oid from the table.
-        let oid = $(this).data("oid")
+        // We just grab the oid from the table.  The event comes from the button
+        // so we need to go up to the td then up again to the tr where the oid is
+        let table = $("#persontable").DataTable()
+        let row = $(this).parent().parent()
+        let oid = row.data("oid")
+        let row_data = table.row(row).data()
+
+        $("#person_first_name").val(row_data[1])
+        $("#person_last_name").val(row_data[2])
+        $("#person_group").val(row_data[3])
+        $("#person_email").val(row_data[0])
+        $("#person_password").val("")
+        $("#person_admin").prop('checked', row_data[4]==="true")
+        $("#newpersondiv").modal("show")
     
 }
 
