@@ -32,10 +32,23 @@ function load_configuration () {
 
 
 function new_person() {
-
+    // Clear any stored values
+    $("#person_first_name").val("")
+    $("#person_last_name").val("")
+    $("#person_group").val("")
+    $("#person_email").val("")
+    $("#person_password").val("")
+    $("#person_admin").prop('checked', false)
     $("#newpersondiv").modal("show")
 }
 
+
+function edit_person() {
+        console.log(this)
+        // We just grab the oid from the table.
+        let oid = $(this).data("oid")
+    
+}
 
 function create_person () {
 
@@ -71,6 +84,11 @@ function create_person () {
                 // Redraw the table
                 t.draw()
 
+                // Update the events
+                $(".editperson").unbind()
+                $(".editperson").click(edit_person)
+
+
                 // Remove the new person dialog
                 $("#newpersondiv").modal("hide")
 
@@ -105,6 +123,8 @@ function update_people(){
                 }
 
                 t.draw()
+                $(".editperson").unbind()
+                $(".editperson").click(edit_person)
             },
             error: function(message) {
                 $("#personbody").clear()
