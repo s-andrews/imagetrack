@@ -25,6 +25,9 @@ function initial_setup () {
     
         // Make the file tree a jstree
         $("#filetree").jstree({'core': {'data':[]}})
+
+        // Make the person selection update projects on change
+        $("#usertoshow").change(update_projects)
     
 }
 
@@ -325,7 +328,37 @@ function create_project () {
     )
 }
 
+function list_shared_users() {
+    $.ajax(
+        {
+            url: backend,
+            method: "POST",
+            data: {
+                action: "list_shared_users",
+                session: session
+            },
+            success: function(users) {
+                let userselect = $("#usertoshow")
+                userselect.empty()
+                for (let u in users) {
+                    let user = users[u]
+                    console.log(user)
+                    userselect.append(`<option value=${user['_id']['$oid']}>${user['first_name']} ${user['last_name']}</option>`)
+                }
+
+                update_projects()
+            },
+            error: function(message) {
+
+            }
+        }
+    )    
+}
+
 function update_projects(){
+
+    // We find the oid of the person we want to see from the user select
+    let user_oid = $("#usertoshow").val()
 
     $.ajax(
         {
@@ -333,7 +366,8 @@ function update_projects(){
             method: "POST",
             data: {
                 action: "list_projects",
-                session: session
+                session: session,
+                user: user_oid
             },
             success: function(projects) {
                 $("#projectbody").empty()
@@ -350,7 +384,7 @@ function update_projects(){
                 t.draw()
             },
             error: function(message) {
-                $("#projectbody").clear()
+                $('#projecttable').DataTable().clear()
             }
         }
     )
@@ -377,8 +411,9 @@ function load_initial_content() {
     
     $("#maincontent").show()
     
-    // Get their list of projects
-    update_projects()
+    // Get the list of people they can see.  This will then trigger
+    // the loading of the projects for the first user
+    list_shared_users()
 
     // Load the config
     load_configuration()

@@ -51,7 +51,10 @@ def main():
             list_people(person)
 
         elif form["action"].value == "list_projects":
-            list_projects(person)
+            list_projects(person, form["user"].value)
+
+        elif form["action"].value == "list_shared_users":
+            list_shared_users(person)
 
         elif form["action"].value == "project_details":
             project_details(person,form["oid"].value, server_conf["server"]["data_folder"])
@@ -150,16 +153,53 @@ def new_person(person,form):
     send_json(new_user)
     
 
-def list_projects(person):
+def list_projects(person, user_oid):
     """
     Gets all projects associated with a given user
 
     @person:   The person document for the person making the request
+    @user_oid: The oid of the user whose projects they want to see
 
     @returns:  Forwards the project list to the json responder
     """
-    project_list = projects.find({"person_id":person["_id"]})
-    send_json(project_list)
+
+    # We need to check that this person is allowed to view the
+    # projects of the person they're requesting.
+    # 
+    # The easy check is that if it's their own projects or they
+    # are an admin then it's all good.
+
+    if person["admin"] or person["_id"]["$oid"] == user_oid: 
+        project_list = projects.find({"person_id":ObjectId(user_oid)})
+        send_json(project_list)
+    
+    else:
+        # TODO: Check for sharing permissions
+        send_response(False)
+
+
+def list_shared_users(person):
+    """
+    Gets all the users who this user can see.  Everyone if they're an
+    admin, or just people who have shared if they're a normal user
+
+    @person:   The person document for the person making the request
+
+    @returns:  Forwards the user list to the json responder
+    """
+    user_list = [person]
+
+    if person["admin"]:
+        user_list = people.find({})
+
+    # TODO: Check for sharing permissions
+
+    cut_down_user_list = []
+
+    for u in user_list:
+        cut_down_user_list.append({"_id":u["_id"],"first_name":u["first_name"],"last_name":u["last_name"]})
+
+    send_json(cut_down_user_list)
 
 
 
