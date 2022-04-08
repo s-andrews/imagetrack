@@ -44,7 +44,6 @@ function new_person() {
 
 
 function edit_person() {
-        console.log(this)
         // We just grab the oid from the table.  The event comes from the button
         // so we need to go up to the td then up again to the tr where the oid is
         let table = $("#persontable").DataTable()
@@ -57,9 +56,13 @@ function edit_person() {
         $("#person_group").val(row_data[3])
         $("#person_email").val(row_data[0])
         $("#person_password").val("")
-        $("#person_admin").prop('checked', row_data[4]==="true")
+        $("#person_admin").prop('checked', row_data[4])
         $("#newpersondiv").modal("show")
-    
+
+        // We also add the person's oid to the submit button on the
+        // form so that when it's clicked we know that this is an 
+        // update instead of a new person
+        $("#create_person").data("oid",oid)    
 }
 
 function create_person () {
@@ -71,7 +74,15 @@ function create_person () {
     let group = $("#person_group").val()
     let email = $("#person_email").val()
     let password = $("#person_password").val()
-    let admin = $("#person_admin").val()
+    let admin = $("#person_admin").is(':checked')
+
+    // We also look for an oid on the submit button.  If we
+    // find one then we are doing an edit rather than a 
+    // create
+    let oid = $(this).data("oid")
+
+    // Clear the data on the submit button
+    $(this).removeData("oid")
 
     $.ajax(
         {
@@ -80,6 +91,7 @@ function create_person () {
             data: {
                 action: "new_person",
                 session: session,
+                oid: oid,
                 first_name: first_name,
                 last_name: last_name,
                 group: group,
@@ -91,6 +103,11 @@ function create_person () {
 
                 // Add this to the list of people and show its details
                 let t = $('#persontable').DataTable();
+
+                // Remove a row if it already exists for this oid
+                t.row($("tr[data-oid='"+new_person_details["_id"]["$oid"]+"']")).remove()
+
+                // Add the new row
                 add_person_row(t,new_person_details)
 
                 // Redraw the table
@@ -99,7 +116,6 @@ function create_person () {
                 // Update the events
                 $(".editperson").unbind()
                 $(".editperson").click(edit_person)
-
 
                 // Remove the new person dialog
                 $("#newpersondiv").modal("hide")
@@ -123,7 +139,6 @@ function update_people(){
                 session: session
             },
             success: function(people) {
-                console.log(people)
                 $("#personbody").empty()
 
                 let t = $('#persontable').DataTable();
