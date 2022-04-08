@@ -137,13 +137,13 @@ def new_person(person,form):
         if not ("password" in form and form["password"].value):
             new_user["password"] = existing_user["password"]
         else:
-            new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt()),
+            new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
 
 
         people.replace_one({"_id":new_user["_id"]},new_user)
 
     else:
-        new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt()),
+        new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
 
         new_user["_id"] = people.insert_one(new_user).inserted_id
     
