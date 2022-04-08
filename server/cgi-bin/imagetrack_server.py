@@ -54,7 +54,7 @@ def main():
             list_projects(person)
 
         elif form["action"].value == "project_details":
-            project_details(person,form["oid"].value, server_conf["data_folder"])
+            project_details(person,form["oid"].value, server_conf["server"]["data_folder"])
 
         elif form["action"].value == "new_project":
             new_project(person,form,server_conf)
