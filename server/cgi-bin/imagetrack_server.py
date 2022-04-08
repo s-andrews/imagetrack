@@ -57,7 +57,7 @@ def main():
             project_details(person,form["oid"].value, server_conf["server"]["data_folder"])
 
         elif form["action"].value == "new_project":
-            new_project(person,form,server_conf)
+            new_project(person,form,server_conf["server"]["data_folder"])
 
         elif form["action"].value == "new_person":
             new_person(person,form)
@@ -191,8 +191,9 @@ def project_details(person,oid, data_folder):
     """
     Retrieves a project document for a given oid
 
-    @person:   The person document for the person making the request
-    @oid:      The oid for the project
+    @person:      The person document for the person making the request
+    @oid:         The oid for the project
+    @data_folder: The root directory for the data
 
     @returns:  Forwards the project document to the json responder
     """
@@ -384,7 +385,7 @@ def checksession (sessioncode):
     return None
 
 
-def new_project(person,form,conf):
+def new_project(person,form,data_folder):
     """
     Creates a new event and puts it into the database
 
@@ -414,7 +415,7 @@ def new_project(person,form,conf):
     # the displayed path to reflect the location of the folder
     # on that machine.
 
-    real_folder = Path(conf["data_folder"])
+    real_folder = Path(data_folder)
     virtual_folder = Path(".")
 
     folders = [person["group"],person["first_name"]+person["last_name"],str(date.today())+"_"+name]
