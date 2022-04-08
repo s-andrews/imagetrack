@@ -10,9 +10,8 @@ from urllib.parse import quote_plus
 with open(Path(".") / "Configuration/conf.json") as infh:
     conf = json.loads(infh.read())
 
-db_string = f"mongodb://{quote_plus(conf['username'])}:{quote_plus(conf['password'])}@{conf['server_address']}"
+db_string = f"mongodb://{quote_plus(conf['server']['username'])}:{quote_plus(conf['server']['password'])}@{conf['server']['address']}"
 client = MongoClient(db_string)
 db = client.imagetrack_database
 projects = db.projects_collection
 people = db.people_collection
-configuration = db.configuration_collection
