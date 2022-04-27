@@ -169,7 +169,7 @@ def list_projects(person, user_oid):
     # The easy check is that if it's their own projects or they
     # are an admin then it's all good.
 
-    if person["admin"] or person["_id"]["$oid"] == user_oid: 
+    if person["admin"] or str(person["_id"]) == user_oid: 
         project_list = projects.find({"person_id":ObjectId(user_oid)})
         send_json(project_list)
     
