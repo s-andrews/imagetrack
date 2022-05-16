@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from msilib.schema import Error
-from pickletools import read_float8
+#from msilib.schema import Error
+#from pickletools import read_float8
 import bcrypt
 import random
 from pathlib import Path
@@ -237,6 +237,8 @@ def project_details(person,oid, data_folder):
 
     @returns:  Forwards the project document to the json responder
     """
+    # TODO: We could be fetching a project from another person
+    # if this person is an admin.
     project_details = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
 
     # We also need to get the list of files stored under this project
