@@ -199,7 +199,7 @@ function update_selected_project (project_oid) {
 
                 for (let i in project_json["tags"]) {
                     t.append(`
-                    <div class="row">
+                    <div class="row tagrow">
                     <div class="col-md-1"></div>
                     <div class="col-md-3 tagname">${i}</div>
                     <div class="col-md-4 tagvalue">${project_json["tags"][i]}</div>

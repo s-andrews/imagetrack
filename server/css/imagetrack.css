@@ -51,11 +51,19 @@ h5 {
 }
 
 .tagname, .commentdate {
-    background-color: darkgrey;
+    background-color: #333333;
     color: white;
     font-weight: bold;
 }
 
+.tagvalue {
+    background-color: #DDD;
+}
+
 #projecttags, #projectcomments {
     padding-bottom: 2em;
+}
+
+.tagrow {
+    margin-bottom: 0.2em;
 }
