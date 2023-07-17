@@ -77,6 +77,32 @@ function add_project_tag() {
     )
 }
 
+function remove_project_tag() {
+    let tag_name = $(this).parent().parent().find(".tagname").text()
+
+    $.ajax(
+        {
+            url: backend,
+            method: "POST",
+            data: {
+                action: "remove_tag",
+                session: session,
+                oid: selected_project_oid,
+                tag_name: tag_name,
+            },
+            success: function(project_json) {
+                $("#projecttagname").val("")
+                $("#projecttagvalue").val("")
+                update_selected_project(selected_project_oid)
+            },
+            error: function(message) {
+                console.log("Failed to remove tag")
+            }
+        }
+    )
+}
+
+
 function add_project_comment() {
     let comment_text = $("#projectcommenttext").val()
 
@@ -177,6 +203,7 @@ function update_selected_project (project_oid) {
                     <div class="col-md-1"></div>
                     <div class="col-md-3 tagname">${i}</div>
                     <div class="col-md-4 tagvalue">${project_json["tags"][i]}</div>
+                    <div class="col-md-4"><button class="btn btn-danger btn-sm tagdelete">Delete</button></div>
                     </div>
                     `)
                 }
@@ -195,6 +222,9 @@ function update_selected_project (project_oid) {
                     </div>
                     `)
                 }
+
+                $(".tagdelete").unbind()
+                $(".tagdelete").click(remove_project_tag)
 
                 $("#projectloading").hide()
                 $("#projectdetails").show()

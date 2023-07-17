@@ -68,6 +68,9 @@ def main():
         elif form["action"].value == "add_tag":
             add_tag(person,form["oid"].value,form["tag_name"].value,form["tag_value"].value)
 
+        elif form["action"].value == "remove_tag":
+            remove_tag(person,form["oid"].value,form["tag_name"].value)
+
         elif form["action"].value == "add_comment":
             add_comment(person,form["oid"].value,form["comment_text"].value)
 
@@ -355,6 +358,27 @@ def add_tag(person,oid,tag_name, tag_value):
     projects.update_one({"_id":ObjectId(oid)},{"$set": {"tags":tags}})
 
     send_response(True,"")
+
+def remove_tag(person,oid,tag_name):
+    """
+    Removes a tag in an existing project.  
+
+    @person:   The person document for the person removing the tag
+    @oid:      The oid for the project
+    @tag_name: The name of the tag
+
+    @returns: Forwards a true value to the responder
+    """
+
+    doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
+    tags = doc["tags"]
+
+    del tags[tag_name]
+
+    projects.update_one({"_id":ObjectId(oid)},{"$set": {"tags":tags}})
+
+    send_response(True,"")
+
 
 
 def add_comment(person,oid,text):
