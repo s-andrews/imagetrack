@@ -370,7 +370,7 @@ function update_projects(){
                 user: user_oid
             },
             success: function(projects) {
-                $("#projectbody").empty()
+                $("#projectdetails").hide()
 
                 let t = $('#projecttable').DataTable();
                 t.clear()
