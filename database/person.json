@@ -2,7 +2,7 @@
     "_id": "automatically assigned",
     "first_name": "Simon",
     "last_name": "Andrews",
-    "email": "simon.andrews@babraham.ac.uk",
+    "username": "andrewss",
     "group": "bioinformatics",
     "admin": true,
     "password": "hashedpassword",
