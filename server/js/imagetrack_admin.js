@@ -36,7 +36,7 @@ function new_person() {
     $("#person_first_name").val("")
     $("#person_last_name").val("")
     $("#person_group").val("")
-    $("#person_email").val("")
+    $("#person_username").val("")
     $("#person_password").val("")
     $("#person_admin").prop('checked', false)
     $("#newpersondiv").modal("show")
@@ -54,7 +54,7 @@ function edit_person() {
         $("#person_first_name").val(row_data[1])
         $("#person_last_name").val(row_data[2])
         $("#person_group").val(row_data[3])
-        $("#person_email").val(row_data[0])
+        $("#person_username").val(row_data[0])
         $("#person_password").val("")
         $("#person_admin").prop('checked', row_data[4])
         $("#newpersondiv").modal("show")
@@ -72,7 +72,7 @@ function create_person () {
     let first_name = $("#person_first_name").val()
     let last_name = $("#person_last_name").val()
     let group = $("#person_group").val()
-    let email = $("#person_email").val()
+    let username = $("#person_username").val()
     let password = $("#person_password").val()
     let admin = $("#person_admin").is(':checked')
 
@@ -95,7 +95,7 @@ function create_person () {
                 first_name: first_name,
                 last_name: last_name,
                 group: group,
-                email: email,
+                username: username,
                 password: password,
                 admin: admin
             },
@@ -162,7 +162,7 @@ function update_people(){
 
 function add_person_row(table, person) {
     let i = table.row.add([
-        person["email"],
+        person["username"],
         person["first_name"],
         person["last_name"],
         person["group"],

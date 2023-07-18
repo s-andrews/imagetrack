@@ -76,7 +76,7 @@ function logout() {
 
 
 function process_login() {
-    let email = $("#email").val()
+    let username = $("#username").val()
     let password = $("#password").val()
 
     // Clear the password so they can't do it again
@@ -88,7 +88,7 @@ function process_login() {
             method: "POST",
             data: {
                 action: "login",
-                email: email,
+                username: username,
                 password: password
             },
             success: function(session_string) {

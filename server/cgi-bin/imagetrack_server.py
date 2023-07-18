@@ -13,6 +13,7 @@ from datetime import date,datetime
 import cgi
 import cgitb
 import copy
+import ldap
 cgitb.enable()
 
 def main():
@@ -31,7 +32,7 @@ def main():
         return
 
     if form["action"].value == "login":
-        process_login(form["email"].value,form["password"].value)
+        process_login(form["username"].value,form["password"].value)
 
     elif form["action"].value == "validate_session":
         person = checksession(form["session"].value)
@@ -121,7 +122,7 @@ def new_person(person,form):
     new_user = {
         "first_name": form["first_name"].value,
         "last_name": form["last_name"].value,
-        "email": form["email"].value,
+        "username": form["username"].value,
         "group": form["group"].value,
         "admin": form["admin"].value == "true",
         "sessioncode": None,
@@ -145,11 +146,13 @@ def new_person(person,form):
         else:
             new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
 
-
         people.replace_one({"_id":new_user["_id"]},new_user)
 
     else:
-        new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
+        if "@" in form["username"].value:
+            new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
+        else:
+            new_user["password"] = ""
 
         new_user["_id"] = people.insert_one(new_user).inserted_id
     
@@ -411,27 +414,43 @@ def get_configuration(server_conf):
     config.pop("server",None)
     send_json(config)
 
-def process_login (email,password):
+def process_login (username,password):
     """
-    Validates an email / password combination and generates
+    Validates an username / password combination and generates
     a session id to authenticate them in future
 
-    @email:     Their email (username)
-    @password:  The unhashed version of their password
+    @username:  Their username (username for BI, email for external)
+    @password:  The unhashed version of their password. Only used for externals
 
     @returns:   Forwards the session code to the json response
     """
 
-    person = people.find_one({"email":email})
+    person = people.find_one({"username":username})
 
     # Check the password
-    if bcrypt.checkpw(password.encode("UTF-8"),person["password"]):
-        sessioncode = generate_id(20)
-        people.update_one({"email":email},{"$set":{"sessioncode": sessioncode}})
 
-        send_response(True,sessioncode)
+    # If they just have a bare username then we validate against AD
+    if not "@" in username:
+        conn = ldap.initialize("ldap://babraham.ac.uk")
+        conn.set_option(ldap.OPT_REFERRALS, 0)
+        try:
+            conn.simple_bind_s(username+"@babraham.ac.uk", password)
+            sessioncode = generate_id(20)
+            people.update_one({"username":username},{"$set":{"sessioncode": sessioncode}})
+
+            send_response(True,sessioncode)
+        except ldap.INVALID_CREDENTIALS:
+          send_response(False,"Incorrect login")
+    # If not then we hash their password and check it against the 
+    # stored value
     else:
-        send_response(False,"Incorrect login")
+        if bcrypt.checkpw(password.encode("UTF-8"),person["password"]):
+            sessioncode = generate_id(20)
+            people.update_one({"username":username},{"$set":{"sessioncode": sessioncode}})
+
+            send_response(True,sessioncode)
+        else:
+            send_response(False,"Incorrect login")
 
 
 def checksession (sessioncode):
@@ -503,7 +522,7 @@ def new_project(person,form,data_folder):
         suffix = 1
         while True:
             if suffix == 100:
-                raise Error("Couldn't find unused folder name")
+                raise Exception("Couldn't find unused folder name")
             if not (real_folder.parent / (real_folder.name+"_"+str(suffix).zfill(3))).exists():
                 real_folder = real_folder.parent / (real_folder.name+"_"+str(suffix).zfill(3))
                 virtual_folder = virtual_folder.parent / (virtual_folder.name+"_"+str(suffix).zfill(3))
