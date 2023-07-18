@@ -10,7 +10,7 @@ def main():
     with open(Path(__file__).parent.parent / "Configuration/conf.json") as infh:
         conf = json.loads(infh.read())
 
-    db_string = f"mongodb://{quote_plus(conf['username'])}:{quote_plus(conf['password'])}@{conf['server_address']}"
+    db_string = f"mongodb://{quote_plus(conf['server']['username'])}:{quote_plus(conf['server']['password'])}@{conf['server']['address']}"
     print("Connecting to",db_string)
     client = MongoClient(db_string)
     db = client.imagetrack_database
@@ -27,10 +27,10 @@ def main():
     admin = {
         "first_name": "Simon",
         "last_name": "Andrews",
-        "email": "simon.andrews@babraham.ac.uk",
+        "username": "andrewss",
         "group": "bioinformatics",
         "admin": True,
-        "password": bcrypt.hashpw("testing".encode("UTF-8"),bcrypt.gensalt()),
+        "password": "",
         "sessioncode": "",
         "reset_code": "",
         "shared_with": []
