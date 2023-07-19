@@ -1,4 +1,3 @@
-const backend = "/cgi-bin/imagetrack_server.py"
 var session = ""
 var configuration = ""
 var selected_project_oid = ""
@@ -31,10 +30,9 @@ function show_login() {
         // Validate the ID
         $.ajax(
             {
-                url: backend,
+                url: "validate_session",
                 method: "POST",
                 data: {
-                    action: "validate_session",
                     session: session,
                 },
                 success: function(session_string) {
@@ -84,10 +82,9 @@ function process_login() {
 
     $.ajax(
         {
-            url: backend,
+            url: "login",
             method: "POST",
             data: {
-                action: "login",
                 username: username,
                 password: password
             },
