@@ -306,7 +306,29 @@ def new_person():
 
 @app.route("/add_tag", methods = ['POST', 'GET'])
 def add_tag():
-    pass
+    """
+    Adds or replaces a tag in an existing project.  Will define a new
+    tag if it doesn't exist or will update the value of an existing
+    tag.
+
+    @person:   The person document for the person adding the comment
+    @oid:      The oid for the project
+    @tag_name: The name of the tag
+    @tag_name: The text value for the tag
+
+    @returns: Forwards a true value to the responder
+    """
+    form = get_form()
+    person = checksession(form["sessionid"])
+    oid = form["oid"]
+
+    doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
+    tags = doc["tags"]
+    tags[form["tag_name"]] = form["tag_value"]
+
+    projects.update_one({"_id":ObjectId(oid)},{"$set": {"tags":tags}})
+
+    return(True)
 
 @app.route("/remove_tag", methods = ['POST', 'GET'])
 def remove_tag():
