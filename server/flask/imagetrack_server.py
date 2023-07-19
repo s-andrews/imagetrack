@@ -70,7 +70,9 @@ def process_login():
 
 @app.route("/validate_session", methods = ['POST', 'GET'])
 def validate_session():
-    pass
+    form = get_form()
+    person = checksession(form["session"])
+    return(person["admin"])
 
 @app.route("/configuration")
 def get_configuration():
