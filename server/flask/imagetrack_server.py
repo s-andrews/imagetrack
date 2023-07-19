@@ -100,7 +100,33 @@ def list_projects():
 
 @app.route("/list_shared_users", methods = ['POST', 'GET'])
 def list_shared_users():
-    pass
+    """
+    Gets all the users who this user can see.  Everyone if they're an
+    admin, or just people who have shared if they're a normal user
+
+    @person:   The person document for the person making the request
+
+    @returns:  Forwards the user list to the json responder
+    """
+   
+    form = get_form()
+    person = checksession(form["sessionid"])
+
+    user_list = [person]
+
+    if person["admin"]:
+        user_list = people.find({})
+
+    # TODO: Check for sharing permissions
+
+    cut_down_user_list = []
+
+    for u in user_list:
+        cut_down_user_list.append({"_id":u["_id"],"first_name":u["first_name"],"last_name":u["last_name"]})
+
+    return jsonify(cut_down_user_list)
+
+
 
 @app.route("/project_details", methods = ['POST', 'GET'])
 def project_details():
