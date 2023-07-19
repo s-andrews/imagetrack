@@ -24,11 +24,51 @@ def index():
 def admin():
     return render_template("admin.html")
 
-@app.route("/login")
+@app.route("/login", methods = ['POST', 'GET'])
 def process_login():
-    pass
+    """
+    Validates an username / password combination and generates
+    a session id to authenticate them in future
 
-@app.route("/validate_session")
+    @username:  Their username (username for BI, email for external)
+    @password:  The unhashed version of their password. Only used for externals
+
+    @returns:   Forwards the session code to the json response
+    """
+    form = get_form()
+    username = form["username"]
+    password = form["password"]
+
+    person = people.find_one({"username":username})
+
+    # Check the password
+
+    # If they just have a bare username then we validate against AD
+    if not "@" in username:
+        conn = ldap.initialize("ldap://babraham.ac.uk")
+        conn.set_option(ldap.OPT_REFERRALS, 0)
+        try:
+            conn.simple_bind_s(username+"@babraham.ac.uk", password)
+            sessioncode = generate_id(20)
+            people.update_one({"username":username},{"$set":{"sessioncode": sessioncode}})
+
+            return(sessioncode)
+        
+        except ldap.INVALID_CREDENTIALS:
+          raise Exception("Incorrect Username/Password from LDAP")
+        
+    # If not then we hash their password and check it against the 
+    # stored value
+    else:
+        if bcrypt.checkpw(password.encode("UTF-8"),person["password"]):
+            sessioncode = generate_id(20)
+            people.update_one({"username":username},{"$set":{"sessioncode": sessioncode}})
+
+            return(sessioncode)
+        else:
+            raise Exception("Incorrect username/password from local password")
+
+@app.route("/validate_session", methods = ['POST', 'GET'])
 def validate_session():
     pass
 
