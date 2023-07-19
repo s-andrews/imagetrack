@@ -70,7 +70,33 @@ def list_people():
 
 @app.route("/list_projects", methods = ['POST', 'GET'])
 def list_projects():
-    pass
+    """
+    Gets all projects associated with a given user
+
+    @person:   The person document for the person making the request
+    @user_oid: The oid of the user whose projects they want to see
+
+    @returns:  Forwards the project list to the json responder
+    """
+
+    # We need to check that this person is allowed to view the
+    # projects of the person they're requesting.
+    # 
+    # The easy check is that if it's their own projects or they
+    # are an admin then it's all good.
+
+    form = get_form()
+    person = checksession(form["sessionid"])
+    user_oid = form["user"]
+
+    if person["admin"] or str(person["_id"]) == user_oid: 
+        project_list = projects.find({"person_id":ObjectId(user_oid)})
+        return jsonify(project_list)
+    
+    else:
+        # TODO: Check for sharing permissions
+        raise Exception("You can't look at this persons projects")
+
 
 @app.route("/list_shared_users", methods = ['POST', 'GET'])
 def list_shared_users():
