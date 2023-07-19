@@ -357,7 +357,26 @@ def remove_tag():
 
 @app.route("/add_comment", methods = ['POST', 'GET'])
 def add_comment():
-    pass
+    """
+    Adds a comment to an existing project
+
+    @person: The person document for the person adding the comment
+    @oid:    The oid for the project
+    @text:   The text of the comment
+
+    @returns: Forwards a true value to the responder
+    """
+    form = get_form()
+    person = checksession(form["sessionid"])
+    oid = form["oid"]
+
+    doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
+    comments = doc["comments"]
+    comments.append({"date":str(datetime.now().replace(microsecond=0)), "text":form["text"]})
+
+    projects.update_one({"_id":ObjectId(oid)},{"$set": {"comments":comments}})
+
+    return(True)
 
 def get_form():
     if request.method == "GET":
