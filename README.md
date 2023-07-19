@@ -49,6 +49,20 @@ The main configuration for the site is in ```Configuration/conf.json``` and you 
 create this file.  There is an example file in ```Configuration/example_conf.json``` which you
 can copy and edit.
 
+Populate the database
+=====================
+
+We need to create an initial user to be able to use the site.  The script to do this is
+```Configuration/setup_database.py```.  Inside the script there is a json section with the 
+details of the admin user you intially want to create and you can edit these to whatever
+name and username you like.  Once you're happy then initialise the venv and run:
+
+```
+python3 setup_database.py
+```
+
+..from within the ```Configuration``` folder.
+
 
 Install the apache configuration
 ================================
