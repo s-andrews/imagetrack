@@ -5,11 +5,8 @@ function load_configuration () {
     if (!configuration) {
         $.ajax(
             {
-                url: backend,
-                method: "POST",
-                data: {
-                    action: "configuration"
-                },
+                url: "configuration",
+                method: "GET",
                 success: function(configuration_data) {
                     configuration = configuration_data
 
@@ -86,10 +83,9 @@ function create_person () {
 
     $.ajax(
         {
-            url: backend,
+            url: "new_person",
             method: "POST",
             data: {
-                action: "new_person",
                 session: session,
                 oid: oid,
                 first_name: first_name,
@@ -132,10 +128,9 @@ function update_people(){
 
     $.ajax(
         {
-            url: backend,
+            url: "list_people",
             method: "POST",
             data: {
-                action: "list_people",
                 session: session
             },
             success: function(people) {
