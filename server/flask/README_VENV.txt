@@ -18,4 +18,5 @@ pip3 install python-ldap
 
 pip3 install flask bcrypt pymongo
 
-flask --app imagetrack_server run
+# Debug
+flask --app imagetrack_server run --debug
