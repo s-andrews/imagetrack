@@ -25,3 +25,9 @@ hs_err_pid*
 # Actual conf file
 Configuration/conf.json
 
+# venv
+server/flask/venv
+
+# cache files
+*__pycache__*
+
