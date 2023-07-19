@@ -332,7 +332,28 @@ def add_tag():
 
 @app.route("/remove_tag", methods = ['POST', 'GET'])
 def remove_tag():
-    pass
+    """
+    Removes a tag in an existing project.  
+
+    @person:   The person document for the person removing the tag
+    @oid:      The oid for the project
+    @tag_name: The name of the tag
+
+    @returns: Forwards a true value to the responder
+    """
+    form = get_form()
+    person = checksession(form["sessionid"])
+    oid = form["oid"]
+
+    doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
+    tags = doc["tags"]
+
+    del tags[form["tag_name"]]
+
+    projects.update_one({"_id":ObjectId(oid)},{"$set": {"tags":tags}})
+
+    return(True)
+
 
 @app.route("/add_comment", methods = ['POST', 'GET'])
 def add_comment():
