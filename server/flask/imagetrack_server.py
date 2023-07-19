@@ -197,7 +197,7 @@ def project_details():
     # We'll end up summarising this in a few ways so we collect the 
     # raw data first.
 
-    root_folder = Path(server_conf["data_folder"]) / project_details["folder"]
+    root_folder = Path(server_conf["server"]["data_folder"]) / project_details["folder"]
 
     file_tree, extension_details = collate_files(root_folder)
 
@@ -223,7 +223,7 @@ def new_project():
     name = form["name"]
     instrument = form["instrument"]
     organism = form["organism"]
-    modalities = form["modality"]
+    modalities = form.getlist("modality[]")
 
     # We need to make up a new folder address for this project.
     # The structure of the address will be:
@@ -239,7 +239,7 @@ def new_project():
     # the displayed path to reflect the location of the folder
     # on that machine.
 
-    real_folder = Path(server_conf["data_folder"])
+    real_folder = Path(server_conf["server"]["data_folder"])
     virtual_folder = Path(".")
 
     folders = [person["group"],person["first_name"]+person["last_name"],str(date.today())+"_"+name]
@@ -374,7 +374,7 @@ def add_tag():
 
     projects.update_one({"_id":ObjectId(oid)},{"$set": {"tags":tags}})
 
-    return(True)
+    return(str(True))
 
 @app.route("/remove_tag", methods = ['POST', 'GET'])
 def remove_tag():
@@ -398,7 +398,7 @@ def remove_tag():
 
     projects.update_one({"_id":ObjectId(oid)},{"$set": {"tags":tags}})
 
-    return(True)
+    return(str(True))
 
 
 @app.route("/add_comment", methods = ['POST', 'GET'])
@@ -418,11 +418,11 @@ def add_comment():
 
     doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
     comments = doc["comments"]
-    comments.append({"date":str(datetime.now().replace(microsecond=0)), "text":form["text"]})
+    comments.append({"date":str(datetime.now().replace(microsecond=0)), "text":form["comment_text"]})
 
     projects.update_one({"_id":ObjectId(oid)},{"$set": {"comments":comments}})
 
-    return(True)
+    return(str(True))
 
 def get_form():
     if request.method == "GET":
