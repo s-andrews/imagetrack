@@ -15,3 +15,5 @@ client = MongoClient(db_string)
 db = client.imagetrack_database
 projects = db.projects_collection
 people = db.people_collection
+
+breakpoint()

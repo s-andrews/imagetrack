@@ -1,4 +1,3 @@
-const backend = "/cgi-bin/imagetrack_server.py"
 var session = ""
 var configuration = ""
 var selected_project_oid = ""
@@ -31,21 +30,13 @@ function show_login() {
         // Validate the ID
         $.ajax(
             {
-                url: backend,
+                url: "validate_session",
                 method: "POST",
                 data: {
-                    action: "validate_session",
                     session: session,
                 },
                 success: function(session_string) {
-                    if (!session_string.startsWith("Success:")) {
-                        session = ""
-                        Cookies.remove("imagetrack_session_id")
-                        $("#logindiv").modal("show")
-                        show_login()
-                        return
-                    }
-                    is_admin = session_string.substring(9) === 'True'
+                    is_admin = session_string === 'True'
                     $("#logindiv").modal("hide")
 
                     load_initial_content()
@@ -53,7 +44,10 @@ function show_login() {
                 },
                 error: function(message) {
                     console.log("Existing session didn't validate")
+                    session = ""
+                    Cookies.remove("imagetrack_session_id")
                     $("#logindiv").modal("show")
+                    show_login()
                 }
             }
         )
@@ -84,22 +78,15 @@ function process_login() {
 
     $.ajax(
         {
-            url: backend,
+            url: "login",
             method: "POST",
             data: {
-                action: "login",
                 username: username,
                 password: password
             },
             success: function(session_string) {
-                let sections = session_string.split(" ")
-                if (!session_string.startsWith("Success")) {
-                    $("#loginerror").html("Login Failed")
-                    $("#loginerror").show()
-                    return
-                }
                 $("#loginerror").hide()
-                session = sections[1]
+                session = session_string
 
                 Cookies.set("imagetrack_session_id", session, { secure: false, sameSite: 'strict' })
                 show_login()

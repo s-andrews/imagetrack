@@ -56,10 +56,9 @@ function add_project_tag() {
 
     $.ajax(
         {
-            url: backend,
+            url: "add_tag",
             method: "POST",
             data: {
-                action: "add_tag",
                 session: session,
                 oid: selected_project_oid,
                 tag_name: tag_name,
@@ -82,10 +81,9 @@ function remove_project_tag() {
 
     $.ajax(
         {
-            url: backend,
+            url: "remove_tag",
             method: "POST",
             data: {
-                action: "remove_tag",
                 session: session,
                 oid: selected_project_oid,
                 tag_name: tag_name,
@@ -108,10 +106,9 @@ function add_project_comment() {
 
     $.ajax(
         {
-            url: backend,
+            url: "add_comment",
             method: "POST",
             data: {
-                action: "add_comment",
                 session: session,
                 oid: selected_project_oid,
                 comment_text: comment_text
@@ -160,10 +157,9 @@ function update_selected_project (project_oid) {
 
     $.ajax(
         {
-            url: backend,
+            url: "project_details",
             method: "POST",
             data: {
-                action: "project_details",
                 session: session,
                 oid: project_oid
             },
@@ -261,11 +257,8 @@ function load_configuration () {
     if (!configuration) {
         $.ajax(
             {
-                url: backend,
-                method: "POST",
-                data: {
-                    action: "configuration"
-                },
+                url: "configuration",
+                method: "GET",
                 success: function(configuration_data) {
                     configuration = configuration_data
 
@@ -321,10 +314,9 @@ function create_project () {
 
     $.ajax(
         {
-            url: backend,
+            url: "new_project",
             method: "POST",
             data: {
-                action: "new_project",
                 session: session,
                 name: project_name,
                 instrument: project_instrument,
@@ -361,10 +353,9 @@ function create_project () {
 function list_shared_users() {
     $.ajax(
         {
-            url: backend,
+            url: "list_shared_users",
             method: "POST",
             data: {
-                action: "list_shared_users",
                 session: session
             },
             success: function(users) {
@@ -392,10 +383,9 @@ function update_projects(){
 
     $.ajax(
         {
-            url: backend,
+            url: "list_projects",
             method: "POST",
             data: {
-                action: "list_projects",
                 session: session,
                 user: user_oid
             },
