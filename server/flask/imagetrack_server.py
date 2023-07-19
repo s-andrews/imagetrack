@@ -332,16 +332,16 @@ def new_person():
         new_user["sessioncode"] = existing_user["sessioncode"]
         new_user["shared_with"] = existing_user["shared_with"]
 
-        if not ("password" in form and form["password"].value):
+        if not ("password" in form and form["password"]):
             new_user["password"] = existing_user["password"]
         else:
-            new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
+            new_user["password"] = bcrypt.hashpw(form["password"].encode("UTF-8"),bcrypt.gensalt())
 
         people.replace_one({"_id":new_user["_id"]},new_user)
 
     else:
-        if "@" in form["username"].value:
-            new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
+        if "@" in form["username"]:
+            new_user["password"] = bcrypt.hashpw(form["password"].encode("UTF-8"),bcrypt.gensalt())
         else:
             new_user["password"] = ""
 
