@@ -245,7 +245,64 @@ def new_project():
 
 @app.route("/new_person", methods = ['POST', 'GET'])
 def new_person():
-    pass
+    """
+    Creates or edits a user
+
+    @person:   The person document for the person making the request
+    @form:     The raw CGI form for the request
+
+    @returns:  Sends a True value to the responder upon success
+    """
+    form = get_form()
+    person = checksession(form["sessionid"])
+
+    if not person["admin"]:
+        raise Exception("Only Admins can make new users")
+
+    # If they've supplied an oid then we're updating rather than creating
+    oid = ""
+    if "oid" in form and form["oid"]:
+        oid = form["oid"]
+
+    new_user = {
+        "first_name": form["first_name"],
+        "last_name": form["last_name"],
+        "username": form["username"],
+        "group": form["group"],
+        "admin": form["admin"] == "true",
+        "sessioncode": None,
+        "reset_code": None,
+        "shared_with": []
+    }
+
+    if oid:
+        existing_user = people.find_one({"_id": ObjectId(oid)})
+        # We need to copy over the sessioncode from the
+        # old entry, as well as the password if they 
+        # haven't reset it
+        new_user["_id"] = existing_user["_id"]
+        new_user["sessioncode"] = existing_user["sessioncode"]
+        new_user["reset_code"] = existing_user["reset_code"]
+        new_user["sessioncode"] = existing_user["sessioncode"]
+        new_user["shared_with"] = existing_user["shared_with"]
+
+        if not ("password" in form and form["password"].value):
+            new_user["password"] = existing_user["password"]
+        else:
+            new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
+
+        people.replace_one({"_id":new_user["_id"]},new_user)
+
+    else:
+        if "@" in form["username"].value:
+            new_user["password"] = bcrypt.hashpw(form["password"].value.encode("UTF-8"),bcrypt.gensalt())
+        else:
+            new_user["password"] = ""
+
+        new_user["_id"] = people.insert_one(new_user).inserted_id
+    
+    return jsonify(new_user)
+    
 
 @app.route("/add_tag", methods = ['POST', 'GET'])
 def add_tag():
