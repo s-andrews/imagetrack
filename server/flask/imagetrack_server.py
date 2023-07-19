@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import bcrypt
 import random
 from pathlib import Path
@@ -18,7 +18,11 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return("<p>LIMS</p>")
+    return render_template("index.html")
+
+@app.route("/admin")
+def admin():
+    return render_template("admin.html")
 
 @app.route("/login")
 def process_login():
