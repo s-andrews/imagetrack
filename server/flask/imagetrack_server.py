@@ -130,11 +130,118 @@ def list_shared_users():
 
 @app.route("/project_details", methods = ['POST', 'GET'])
 def project_details():
-    pass
+    """
+    Retrieves a project document for a given oid
+
+    @person:      The person document for the person making the request
+    @oid:         The oid for the project
+    @data_folder: The root directory for the data
+
+    @returns:  Forwards the project document to the json responder
+    """
+    form = get_form()
+    person = checksession(form["sessionid"])
+    oid = form["oid"]
+
+    # TODO: We could be fetching a project from another person
+    # if this person is an admin.
+    project_details = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
+
+    # We also need to get the list of files stored under this project
+    # We'll end up summarising this in a few ways so we collect the 
+    # raw data first.
+
+    root_folder = Path(server_conf["data_folder"]) / project_details["folder"]
+
+    file_tree, extension_details = collate_files(root_folder)
+
+    project_details["files"] = file_tree
+    project_details["extensions"] = extension_details
+
+    return jsonify(project_details)
 
 @app.route("/new_project", methods = ['POST', 'GET'])
 def new_project():
-    pass
+    """
+    Creates a new event and puts it into the database
+
+    @person:  The hash of the person from the database
+    @form:    The raw form from the CGI query
+    @conf:    The configuration for the server to get the base dir for projects
+
+    @returns: Forwards the new project document to the json responder
+    """
+    form = get_form()
+    person = checksession(form["sessionid"])
+
+    name = form["name"]
+    instrument = form["instrument"]
+    organism = form["organism"]
+    modalities = form["modality"]
+
+    # We need to make up a new folder address for this project.
+    # The structure of the address will be:
+
+    # Base folder / Group / Person / date+name
+
+    # Since the path to the root folder may not be the same on
+    # all machines we store two versions of the folder location
+    # A real one which is where the folder is located on the 
+    # computer running the back end for the web system, and a 
+    # virtual one which is a relative path from wherever the
+    # root folder is.  On a given machine we can then modify
+    # the displayed path to reflect the location of the folder
+    # on that machine.
+
+    real_folder = Path(server_conf["data_folder"])
+    virtual_folder = Path(".")
+
+    folders = [person["group"],person["first_name"]+person["last_name"],str(date.today())+"_"+name]
+
+    bad_chars = "#%&{}\\\/<>*?$!'\":+`|="
+
+    for f in folders:
+        for c in bad_chars:
+            f = f.replace(c,"_")
+
+        real_folder = real_folder.joinpath(f)
+        virtual_folder = virtual_folder.joinpath(f)
+        
+    # Check whether this folder exists already.  It might if they make multiple 
+    # projects on the same day with the same name.  If it does we just append 
+    # _001, _002 etc to the end until it's novel.
+
+    if real_folder.exists():
+        suffix = 1
+        while True:
+            if suffix == 100:
+                raise Exception("Couldn't find unused folder name")
+            if not (real_folder.parent / (real_folder.name+"_"+str(suffix).zfill(3))).exists():
+                real_folder = real_folder.parent / (real_folder.name+"_"+str(suffix).zfill(3))
+                virtual_folder = virtual_folder.parent / (virtual_folder.name+"_"+str(suffix).zfill(3))
+                break
+        
+            suffix += 1
+
+    # Make the new folder
+    real_folder.mkdir(parents=True)
+
+    project = {
+        "person_id": person["_id"],
+        "date": str(datetime.now().replace(microsecond=0)),
+        "folder": str(virtual_folder),
+        "name": name,
+        "instrument": instrument,
+        "modality": modalities,
+        "organism": organism,
+        "tags": {},
+        "comments": []
+    }
+
+    project["_id"] = projects.insert_one(project).inserted_id
+
+    return jsonify(project)
+
 
 @app.route("/new_person", methods = ['POST', 'GET'])
 def new_person():
