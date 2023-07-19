@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import bcrypt
 import random
 from pathlib import Path
@@ -41,41 +41,72 @@ def get_configuration():
     return jsonify(config)
 
 
-@app.route("/list_people")
+@app.route("/list_people", methods = ['POST', 'GET'])
 def list_people():
-    pass
+    """
+    Gets the details of all users.  Only allowed to be called by
+    admins.  Strips out the password and session details
 
-@app.route("/list_projects")
+    @person:   The person document for the person making the request
+
+    @returns:  Forwards the people list to the json responder
+    """
+    form = get_form()
+    person = checksession(form["sessionid"])
+
+    if not person["admin"]:
+        raise Exception("Only admins can do this")
+        
+
+    person_list = list(people.find({}))
+    for person in person_list:
+         person.pop("password",None)
+         person.pop("sessioncode",None)
+         person.pop("reset_code",None)
+
+    return jsonify(person_list)
+
+
+
+@app.route("/list_projects", methods = ['POST', 'GET'])
 def list_projects():
     pass
 
-@app.route("/list_shared_users")
+@app.route("/list_shared_users", methods = ['POST', 'GET'])
 def list_shared_users():
     pass
 
-@app.route("/project_details")
+@app.route("/project_details", methods = ['POST', 'GET'])
 def project_details():
     pass
 
-@app.route("/new_project")
+@app.route("/new_project", methods = ['POST', 'GET'])
 def new_project():
     pass
 
-@app.route("/new_person")
+@app.route("/new_person", methods = ['POST', 'GET'])
 def new_person():
     pass
 
-@app.route("/add_tag")
+@app.route("/add_tag", methods = ['POST', 'GET'])
 def add_tag():
     pass
 
-@app.route("/remove_tag")
+@app.route("/remove_tag", methods = ['POST', 'GET'])
 def remove_tag():
     pass
 
-@app.route("/add_comment")
-def validate_session():
+@app.route("/add_comment", methods = ['POST', 'GET'])
+def add_comment():
     pass
+
+def get_form():
+    if request.method == "GET":
+        return request.args
+
+    elif request.method == "POST":
+        return request.form
+
 
 def generate_id(size):
     """
@@ -189,7 +220,7 @@ def checksession (sessioncode):
     if person:
         return person
 
-    return None
+    raise Exception("Couldn't validate session")
 
 
 def get_server_configuration():
