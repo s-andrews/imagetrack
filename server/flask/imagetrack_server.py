@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, request, render_template, make_response
 import bcrypt
 import random
 from pathlib import Path
@@ -72,7 +72,7 @@ def process_login():
 def validate_session():
     form = get_form()
     person = checksession(form["session"])
-    return(person["admin"])
+    return(str(person["admin"]))
 
 @app.route("/configuration")
 def get_configuration():
@@ -98,7 +98,7 @@ def list_people():
     @returns:  Forwards the people list to the json responder
     """
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
 
     if not person["admin"]:
         raise Exception("Only admins can do this")
@@ -132,7 +132,7 @@ def list_projects():
     # are an admin then it's all good.
 
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
     user_oid = form["user"]
 
     if person["admin"] or str(person["_id"]) == user_oid: 
@@ -156,7 +156,7 @@ def list_shared_users():
     """
    
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
 
     user_list = [person]
 
@@ -186,7 +186,7 @@ def project_details():
     @returns:  Forwards the project document to the json responder
     """
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
     oid = form["oid"]
 
     # TODO: We could be fetching a project from another person
@@ -218,7 +218,7 @@ def new_project():
     @returns: Forwards the new project document to the json responder
     """
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
 
     name = form["name"]
     instrument = form["instrument"]
@@ -300,7 +300,7 @@ def new_person():
     @returns:  Sends a True value to the responder upon success
     """
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
 
     if not person["admin"]:
         raise Exception("Only Admins can make new users")
@@ -365,7 +365,7 @@ def add_tag():
     @returns: Forwards a true value to the responder
     """
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
     oid = form["oid"]
 
     doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
@@ -388,7 +388,7 @@ def remove_tag():
     @returns: Forwards a true value to the responder
     """
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
     oid = form["oid"]
 
     doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
@@ -413,7 +413,7 @@ def add_comment():
     @returns: Forwards a true value to the responder
     """
     form = get_form()
-    person = checksession(form["sessionid"])
+    person = checksession(form["session"])
     oid = form["oid"]
 
     doc = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
@@ -562,6 +562,15 @@ def connect_to_database(conf):
     global people
     projects = db.projects_collection
     people = db.people_collection
+
+def jsonify(data):
+    # This is a function which deals with the bson structures
+    # specifically ObjectID which can't auto convert to json 
+    # and will make a flask response object from it.
+    response = make_response(dumps(data))
+    response.content_type = 'application/json'
+
+    return response
 
 
 # Read the main configuration

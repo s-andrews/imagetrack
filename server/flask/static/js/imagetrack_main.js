@@ -258,7 +258,7 @@ function load_configuration () {
         $.ajax(
             {
                 url: "configuration",
-                method: "POST",
+                method: "GET",
                 success: function(configuration_data) {
                     configuration = configuration_data
 
