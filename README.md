@@ -84,7 +84,7 @@ cd /srv/imagetrack/server/flask
 
 . venv/bin/activate
 
-nohup flask --app imagetrack run & > /dev/null
+nohup flask --app imagetrack_server.py run & > /dev/null
 ```
 
 Your app should now appear at ```http://yourserver/imaging/```
