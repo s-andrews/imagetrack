@@ -275,7 +275,7 @@ def new_project():
     project = {
         "person_id": person["_id"],
         "date": str(datetime.now().replace(microsecond=0)),
-        "folder": str(virtual_folder),
+        "folder": virtual_folder.as_posix(),
         "name": name,
         "instrument": instrument,
         "modality": modalities,
