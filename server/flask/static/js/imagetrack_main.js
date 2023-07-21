@@ -166,7 +166,20 @@ function update_selected_project (project_oid) {
             success: function(project_json) {
 
                 $("#selectedprojectname").text(project_json["name"])
-                $("#selectedprojectfolder").text(project_json["folder"])    
+
+                // The folder name we get back will be in posix style
+                // with forward slashes.  We want to modify this if 
+                // someone is coming from a windows machine
+                let projectfolder = project_json["folder"]
+
+                // TODO: Add a prefix if we know where this is mounted.
+
+                // Swap slashes if they're on windows
+                if (navigator.userAgent.includes("Windows")) {
+                    projectfolder = projectfolder.replaceAll("/","\\")
+                }
+
+                $("#selectedprojectfolder").text(projectfolder)    
 
                 // Create the file tree so they can see the files in there
                 let filetree = $("#filetree")
