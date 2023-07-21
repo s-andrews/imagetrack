@@ -5,6 +5,10 @@
         "password":"password_goes_here",
         "data_folder": "/mnt/data"
     },
+    "mountpoints" : {
+        "127.0.0.1": ["I:/","Local testing"],         
+        "10.99.1.1": ["/mnt/imaging/", "Cluster"]
+    },
     "instruments":[
         "Microscope 1",
         "Microscope 2"

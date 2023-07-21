@@ -201,6 +201,13 @@ def project_details():
 
     file_tree, extension_details = collate_files(root_folder)
 
+    # If this user is coming from a host we recognise then we can prefix their 
+    # folder with the mount point of the data store
+    ip = request.remote_addr
+
+    if ip in server_conf["mountpoints"]:
+        project_details["folder"] = server_conf["mountpoints"][ip][0]+project_details["folder"]
+
     project_details["files"] = file_tree
     project_details["extensions"] = extension_details
 

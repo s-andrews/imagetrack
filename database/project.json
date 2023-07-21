@@ -2,6 +2,7 @@
     "_id": "automatically assigned",
     "person_id": "from person collection",
     "date": "2020-01-20",
+    "folder": "bioinformatics/SimonAndrews/ThisFolder",
     "name": "Nanog KO live imaging",
     "instrument": "Zeiss 780 confocal",
     "modality": ["Spinning disk confocal","Multi-photon"],
