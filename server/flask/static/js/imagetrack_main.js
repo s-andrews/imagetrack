@@ -352,12 +352,14 @@ function show_sharing_with() {
                 session: session
             },
             success: function(shares) {
-                console.log(shares)
-                // TODO: Add the shares to the dialog
                 sharediv = $("#existing_shares")
                 sharediv.text("")
                 for (u in shares) {
                     sharediv.append(`<div class="row"><div class="col-md-1"></div><div class="col-md-9 sharename">${shares[u]}</div><div class="col-md-2"><button class="btn btn-secondary delete_share">Delete</button></div></div>`)
+                }
+
+                if (shares.length == 0){
+                    sharediv.html("<p>No current shares</p>")
                 }
 
                 $(".delete_share").unbind()
