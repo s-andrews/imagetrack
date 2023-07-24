@@ -38,6 +38,8 @@
               <option>[Loading user list]</option>
             </select>
             </div>
+            <div class="col-md-1"><button class="btn btn-primary" id="sharing">Sharing</button>
+            </div>
           </div>
         </div>
         <table id="projecttable" class="table table-striped" style="width:100%">
@@ -192,7 +194,6 @@
 
 
             <div class="row">
-              <div class="col-md-12">
                 <div class="form-group">
                   <label for="project_modality">Organism</label>
                   <select class="form-control" id="project_organism">
@@ -212,6 +213,31 @@
     </div>
   </div>
   
+  <!-- Sharing Div -->
+  <div id="sharingdiv" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title"><img src="static/images/imagetrack_justcells.svg", width="20%"> Current Shares</h3>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-12">
+            <div id="existing_shares">
+            </div>
+
+          <form>
+            <div class="form-group">
+              <label for="new_share_username">New Share</label>
+              <input type="text" class="form-control" id="new_share_username" placeholder="Username">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="add_share" type="button" class="btn btn-primary">Add Share</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
     <!-- Bootstrap JS -->

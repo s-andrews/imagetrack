@@ -2,6 +2,12 @@ function initial_setup () {
         // Action for starting a new project
         $("#newproject").click(new_project)
 
+        // Action for showing shares
+        $("#sharing").click(show_sharing_with)
+
+        // Action for adding a new share
+        $("#add_share").click(add_share)
+
         // Action for submitting a new project
         $("#create_project").click(create_project)
     
@@ -314,6 +320,81 @@ function new_project() {
     $("#newprojectdiv").modal("show")
 }
 
+function add_share() {
+    share_username = $("#new_share_username").val()
+
+    $.ajax(
+        {
+            url: "add_share",
+            method: "POST",
+            data: {
+                session: session,
+                username: share_username
+            },
+            success: function() {
+                show_sharing_with()
+            },
+            error: function(message) {
+                console.log("Failed to add share")
+            }
+        }
+    )
+
+
+}
+
+function show_sharing_with() {
+    $.ajax(
+        {
+            url: "list_shares",
+            method: "POST",
+            data: {
+                session: session
+            },
+            success: function(shares) {
+                console.log(shares)
+                // TODO: Add the shares to the dialog
+                sharediv = $("#existing_shares")
+                sharediv.text("")
+                for (u in shares) {
+                    sharediv.append(`<div class="row"><div class="col-md-1"></div><div class="col-md-9 sharename">${shares[u]}</div><div class="col-md-2"><button class="btn btn-secondary delete_share">Delete</button></div></div>`)
+                }
+
+                $(".delete_share").unbind()
+                $(".delete_share").click(remove_share)
+                // Register the events on the remove buttons
+
+                $("#sharingdiv").modal("show")
+            },
+            error: function(message) {
+                console.log("Failed to list shares")
+            }
+        }
+    )
+}
+
+function remove_share() {
+    share_username = $(this).parent().parent().find(".sharename").text()
+
+    $.ajax(
+        {
+            url: "remove_share",
+            method: "POST",
+            data: {
+                session: session,
+                username: share_username
+            },
+            success: function() {
+                show_sharing_with()
+            },
+            error: function(message) {
+                console.log("Failed to remove share")
+            }
+        }
+    )
+
+}
+
 
 function create_project () {
 
@@ -376,7 +457,6 @@ function list_shared_users() {
                 userselect.empty()
                 for (let u in users) {
                     let user = users[u]
-                    console.log(user)
                     userselect.append(`<option value=${user['_id']['$oid']}>${user['first_name']} ${user['last_name']}</option>`)
                 }
 

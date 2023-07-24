@@ -146,6 +146,59 @@ def list_projects():
     else:
         # TODO: Check for sharing permissions
         raise Exception("You can't look at this persons projects")
+    
+    
+@app.route("/list_shares", methods = ['POST', 'GET'])
+def list_shares():
+    """
+    Gets the usernames for everyone this person is sharing with
+    @returns:  A list of user names
+    """
+
+    form = get_form()
+    person = checksession(form["session"])
+
+    return jsonify(person["shared_with"])
+
+
+@app.route("/add_share", methods = ['POST', 'GET'])
+def add_share():
+    """
+    Adds a new user to share with
+
+    @returns:  True upon success
+    """
+
+    form = get_form()
+    person = checksession(form["session"])
+    share_user = form["username"].lower()
+
+    if not share_user in person["shared_with"]:
+        if people.find_one({"username":share_user}):
+            person["shared_with"].append(share_user)
+            people.update_one({"_id":person["_id"]},{"$set": {"shared_with": person["shared_with"]}})
+        else:
+            raise Exception("Couldn't find user")
+
+    
+    return str(True)
+
+@app.route("/remove_share", methods = ['POST', 'GET'])
+def remove_share():
+    """
+    Removes a share which is already present
+    @returns:  True upon success
+    """
+
+    form = get_form()
+    person = checksession(form["session"])
+    share_user = form["username"].lower()
+
+    if share_user in person["shared_with"]:
+        person["shared_with"].remove(share_user)
+        people.update_one({"_id":person["_id"]},{"$set": {"shared_with": person["shared_with"]}})
+
+    return str(True)
 
 
 @app.route("/list_shared_users", methods = ['POST', 'GET'])
