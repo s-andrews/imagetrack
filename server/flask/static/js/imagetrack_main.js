@@ -359,7 +359,7 @@ function show_sharing_with() {
                 }
 
                 if (shares.length == 0){
-                    sharediv.html("<p>No current shares</p>")
+                    sharediv.html(`<div class="row"><div class="col-md-12 text-center">No current shares</div></div>`)
                 }
 
                 $(".delete_share").unbind()
