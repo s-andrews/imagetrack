@@ -41,6 +41,10 @@ def process_login():
 
     person = people.find_one({"username":username})
 
+    # See if the account is disabled
+    if "disabled" in person and person["disabled"]:
+        raise Exception("Account disabled")
+
     # Check the password
 
     # If they just have a bare username then we validate against AD
@@ -577,6 +581,9 @@ def checksession (sessioncode):
     """
 
     person = people.find_one({"sessioncode":sessioncode})
+
+    if "disabled" in person and person["disabled"]:
+        raise Exception("Account disabled")
 
     if person:
         return person
