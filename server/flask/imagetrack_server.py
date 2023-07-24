@@ -218,13 +218,19 @@ def list_shared_users():
     user_list = [person]
 
     if person["admin"]:
-        user_list = people.find({})
+        user_list = people.find({}).sort(["first_name","last_name"])
 
-    # TODO: Check for sharing permissions
+    else:
+        user_list = people.find({"shared_with":person["username"]}).sort(["first_name","last_name"])
 
     cut_down_user_list = []
+    # We always put ourselves first
+    cut_down_user_list.append({"_id":person["_id"],"first_name":"Me","last_name":""})
 
     for u in user_list:
+        # We don't add ourselves again
+        if u["_id"] == person["_id"]:
+            continue
         cut_down_user_list.append({"_id":u["_id"],"first_name":u["first_name"],"last_name":u["last_name"]})
 
     return jsonify(cut_down_user_list)
