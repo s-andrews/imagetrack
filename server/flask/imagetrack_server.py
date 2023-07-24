@@ -444,6 +444,10 @@ def disable_person():
 
     existing_user = people.find_one({"_id": ObjectId(oid)})
 
+    # Check they're not trying to disable their own account
+    if person["_id"] == existing_user["_id"]:
+        raise Exception("You can't disable your own account")
+
     if not "disabled" in existing_user:
         existing_user["disabled"] = True
 
