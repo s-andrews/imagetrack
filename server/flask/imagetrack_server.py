@@ -138,13 +138,13 @@ def list_projects():
     form = get_form()
     person = checksession(form["session"])
     user_oid = form["user"]
+    user_to_show = people.find_one({"_id":ObjectId(user_oid)})
 
-    if person["admin"] or str(person["_id"]) == user_oid: 
+    if person["admin"] or str(person["_id"]) == user_oid or person["username"] in user_to_show["shared_with"]: 
         project_list = projects.find({"person_id":ObjectId(user_oid)})
         return jsonify(project_list)
     
     else:
-        # TODO: Check for sharing permissions
         raise Exception("You can't look at this persons projects")
     
     
@@ -252,9 +252,15 @@ def project_details():
     person = checksession(form["session"])
     oid = form["oid"]
 
-    # TODO: We could be fetching a project from another person
-    # if this person is an admin.
-    project_details = projects.find_one({"person_id":person["_id"], "_id":ObjectId(oid)})
+    # Get the project first, then see if we're allowed to view it
+    project_details = projects.find_one({"_id":ObjectId(oid)})
+
+    if not person["admin"]:
+        if not ObjectId(project_details["person_id"]) == person["_id"]:
+            # They can only see this if they're sharing with the owner
+            owner = people.find_one({"_id":ObjectId(project_details["person_id"])})
+            if not person["username"] in owner["shared_with"]:
+                raise Exception("You're not allowed to look at this project")
 
     # We also need to get the list of files stored under this project
     # We'll end up summarising this in a few ways so we collect the 
