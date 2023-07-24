@@ -5,6 +5,7 @@
     "username": "andrewss",
     "group": "bioinformatics",
     "admin": true,
+    "disabled": false,
     "password": "hashedpassword",
     "sessioncode": "usedwhenloggingin",
     "reset_code": "codeforresetting",

@@ -39,6 +39,30 @@ function new_person() {
     $("#newpersondiv").modal("show")
 }
 
+function disable_person() {
+    // This function just toggles the disabled state of a person
+    let table = $("#persontable").DataTable()
+    let row = $(this).parent().parent()
+    let oid = row.data("oid")
+
+    $.ajax(
+        {
+            url: "disable_person",
+            method: "POST",
+            data: {
+                session: session,
+                oid: oid
+            },
+            success: function() {
+                update_people()
+            },
+            error: function(message) {
+                console.log("Failed to disable person")
+            }
+        }
+    )
+
+}
 
 function edit_person() {
         // We just grab the oid from the table.  The event comes from the button
@@ -147,6 +171,9 @@ function update_people(){
                 t.draw()
                 $(".editperson").unbind()
                 $(".editperson").click(edit_person)
+
+                $(".disableperson").unbind()
+                $(".disableperson").click(disable_person)
             },
             error: function(message) {
                 $("#personbody").clear()
@@ -156,6 +183,13 @@ function update_people(){
 }
 
 function add_person_row(table, person) {
+
+    disable_button = "<button class='btn btn-primary disableperson'>Disable</button>"
+
+    if ("disabled" in person & person["disabled"]) {
+        disable_button = "<button class='btn btn-danger disableperson'>Re-Enable</button>"
+    }
+
     let i = table.row.add([
         person["username"],
         person["first_name"],
@@ -163,7 +197,7 @@ function add_person_row(table, person) {
         person["group"],
         person["admin"],
         "<button class='btn btn-primary editperson'>Edit</button>",
-        "<button class='btn btn-danger deleteperson'>Disable</button>"
+        disable_button
     ]).index();
 
     // Now we can add the project oid to the tr as a 

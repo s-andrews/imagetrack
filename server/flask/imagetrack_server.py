@@ -325,6 +325,7 @@ def new_person():
         "admin": form["admin"] == "true",
         "sessioncode": None,
         "reset_code": None,
+        "disabled": False,
         "shared_with": []
     }
 
@@ -355,7 +356,36 @@ def new_person():
         new_user["_id"] = people.insert_one(new_user).inserted_id
     
     return jsonify(new_user)
+
+@app.route("/disable_person", methods = ['POST', 'GET'])
+def disable_person():
+    """
+    Toggles the disabled state of a person's account
+
+    @returns:  Sends a True value to the responder upon success
+    """
+    form = get_form()
+    person = checksession(form["session"])
+
+    if not person["admin"]:
+        raise Exception("Only Admins can make new users")
+
+    # If they've supplied an oid then we're updating rather than creating
+    oid = form["oid"]
+
+    existing_user = people.find_one({"_id": ObjectId(oid)})
+
+    if not "disabled" in existing_user:
+        existing_user["disabled"] = True
+
+    else:
+        existing_user["disabled"] = not existing_user["disabled"]
+
+    people.replace_one({"_id":existing_user["_id"]},existing_user)
     
+    return str(True)
+
+
 
 @app.route("/add_tag", methods = ['POST', 'GET'])
 def add_tag():
