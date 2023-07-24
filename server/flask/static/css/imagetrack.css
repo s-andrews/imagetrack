@@ -46,8 +46,14 @@ h2 {
     padding-top: 1em;
 }
 
-h5 {
+#selectedprojectfolder {
     font-family: 'Courier New', Courier, monospace;
+}
+#copypath {
+    padding: 0.2em;
+    margin-left: 1em;
+    box-shadow: none !important;
+    outline: 0px !important;
 }
 
 .tagname, .commentdate {

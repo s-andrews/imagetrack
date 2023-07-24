@@ -22,6 +22,9 @@ function initial_setup () {
     
         // Action when adding a new project comment
         $("#addprojectcomment").click(add_project_comment)
+
+        // Copy the project folder to the clipboard
+        $("#copypath").click(copy_path)
     
         // Make the extensions table a Data Table
         $("#extensions").DataTable({paging: false, autoWidth: false, searching: false, info: false})
@@ -53,6 +56,24 @@ function suggest_tags() {
         $("#projecttagname").val($(this).text())
         return(false)
     })
+}
+
+function copy_path () {
+    path = $("#selectedprojectfolder").text()
+
+    console.log(path)
+
+    const copyContent = async () => {
+        try {
+          await navigator.clipboard.writeText(path);
+          $("#copypath").removeClass("btn-secondary").addClass("btn-success")
+
+          setTimeout(function(){$("#copypath").removeClass("btn-success").addClass("btn-secondary")},500)
+        } catch (err) {
+          console.error('Failed to copy: ', err);
+        }
+    }
+    copyContent()
 }
 
 
