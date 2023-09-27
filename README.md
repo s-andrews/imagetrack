@@ -42,6 +42,18 @@ pip3 install flask python-ldap bcrypt
 
 ```
 
+Mount the data
+==============
+
+You need to have the share which hosts your imaging data mounted on the server which hosts
+the app.  You will need to have read write access to this location. In our case that means
+doing:
+
+```
+mount -t cifs //[servername]/[sharename]/LIMS_user_data /mnt/imagedatastore -o username=[username],domain=[domain]
+```
+
+
 Create the config file
 ======================
 
